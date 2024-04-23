@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 EXPOSE 8501
 RUN mkdir ~/.streamlit  
 WORKDIR /app
-ENTRYPOINT ["streamlit", "run", "app.py"]
+ENTRYPOINT ["streamlit", "run", "st_app.py"]
