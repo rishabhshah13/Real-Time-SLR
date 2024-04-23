@@ -30,5 +30,7 @@ az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku 
 # az acr build --registry $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --image $IMAGE_NAME .
 
 # re-tag the image and push it to the repository
-docker image tag tst $CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
-docker push $CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
+docker tag adetect:latest slrregistry1.azurecr.io/adetect:latest
+docker push slrregistry1.azurecr.io/adetect:latest
+
+
