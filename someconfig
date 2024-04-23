@@ -1,0 +1,11 @@
+az acr create --resource-group slrRG --name slrregistry --sku Basic
+
+az acr login -n slrregistry
+
+
+docker build -t slrapp:v1 .
+docker tag slrapp:v1 slrregistry.azurecr.io/slrapp:v1
+docker push slrregistry.azurecr.io/slrapp:v1
+
+
+
