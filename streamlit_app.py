@@ -422,8 +422,7 @@ def run_sign_detector():
     )
 
 def main():
-    st.title("Real Time Sign Language to Text")
-    st.header("Description of the app")
+    st.title("Real Time Sign Language Recognition")
     run_sign_detector()
 
 
