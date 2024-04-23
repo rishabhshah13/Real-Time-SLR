@@ -34,6 +34,5 @@ docker tag adetect:latest slrregistry1.azurecr.io/adetect:latest
 docker push slrregistry1.azurecr.io/adetect:latest
 
 
-https://rishabhshah13-real-time-slr-st-app-plwikt.streamlit.app/
-
+https://real-time-slr.streamlit.app/
 

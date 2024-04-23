@@ -39,7 +39,7 @@ def get_output(idx,_output,output,TIMING, autocorrect):
     return None
 
 
-def recognize_fingerpellings(image, numberMode, letter_model, number_model, hands, current_hand, output, _output,TIMING, autocorrect):
+def recognize_fingerpellings(image, numberMode, letter_model, number_model, hands, current_hand, output, _output,TIMING, autocorrect,draw_landmarks_flag):
 
     
     # global mp_drawing 
@@ -84,7 +84,7 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
 
             # mp_drawing.draw_landmarks(image, current_select_hand, mp_hands.HAND_CONNECTIONS)
             landmark_list = calc_landmark_list(image, current_select_hand)
-            image = draw_landmarks_hands(image, landmark_list)
+            # image = draw_landmarks_hands(image, landmark_list)
 
             # Get (x, y) coordinates of hand landmarks
             x_values = [lm.x for lm in current_select_hand.landmark]
@@ -97,8 +97,8 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
             max_y = int(max(y_values) * h)
 
             # Draw Text Information
-            cv2.putText(image, f"Hand No. #{idx}", (min_x - 10, max_y + 30), FONT, 0.5, GREEN, 2)
-            cv2.putText(image, f"{handness} Hand", (min_x - 10, max_y + 60), FONT, 0.5, GREEN, 2)
+            # cv2.putText(image, f"Hand No. #{idx}", (min_x - 10, max_y + 30), FONT, 0.5, GREEN, 2)
+            # cv2.putText(image, f"{handness} Hand", (min_x - 10, max_y + 60), FONT, 0.5, GREEN, 2)
 
             # Flip Left Hand to Right Hand
             if handness == 'Left':
@@ -122,8 +122,9 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
                 gesture = gesture if gesture != 'Unknown_Number' else '?'
 
             # Draw Bounding Box
-            cv2.rectangle(image, (min_x - 20, min_y - 10), (max_x + 20, max_y + 10), BLACK, 4)
-            image = draw_info_text(image, [min_x - 20, min_y - 10, max_x + 20, max_y + 10], gesture)
+            if draw_landmarks_flag:
+                cv2.rectangle(image, (min_x - 20, min_y - 10), (max_x + 20, max_y + 10), BLACK, 4)
+                image = draw_info_text(image, [min_x - 20, min_y - 10, max_x + 20, max_y + 10], gesture)
 
             _gesture.append(gesture)
 

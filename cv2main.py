@@ -51,7 +51,7 @@ def parse_opt():
 
 
 def handle_key_press(key):
-    global output, saveGIF, saveVDO, numberMode, fingerspellingmode
+    global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
 
     # Press 'Esc' to quit
     if key == 27:
@@ -64,11 +64,15 @@ def handle_key_press(key):
     elif key == ord(' '):
         fingerspellingmode = not fingerspellingmode
 
+    elif key == ord('d'):
+        draw_landmarks_flag = not draw_landmarks_flag    
+
     # Press 's' to save result
     elif key == ord('s'):
         saveGIF = True
         saveVDO = True
         return False
+        
 
     # Press 'm' to change mode between alphabet and number
     elif key == ord('m'):
@@ -83,22 +87,22 @@ def handle_key_press(key):
 
 
 def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res):
-    global letter_model, number_model, tflite_keras_model, sequence_data
+    global letter_model, number_model, tflite_keras_model, sequence_data, draw_landmarks_flag
 
     if fingerspellingmode:
         try:
             from fingerspellinginference import recognize_fingerpellings
             image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
                                                                             number_model, hands, current_hand, output,
-                                                                            _output, TIMING, autocorrect)
-            print(_output)
+
+
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
             from glossinference import getglosses
-            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res)
+            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,draw_landmarks_flag)
 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -108,7 +112,7 @@ def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TI
 
 
 def process_input(opt):
-    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode
+    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
     saveVDO = opt.video
@@ -116,7 +120,10 @@ def process_input(opt):
     TIMING = opt.timing
     autocorrect = opt.autocorrect
     numberMode = False
-    fingerspellingmode = True
+    fingerspellingmode = False
+    draw_landmarks_flag = False
+    _output = [[], []]
+    output = []
     
     print(f"Timing Threshold is {TIMING} frames.")
     print(f"Using Autocorrect: {autocorrect}")
@@ -137,13 +144,20 @@ def main():
     opt = parse_opt()
     video_path, fps, webcam_width, webcam_height = process_input(opt)
 
+    global output, _output
+    
     _output = [[], []]
     output = []
+
     frame_array = []
     current_hand = 0
     res = []
 
     capture = cv2.VideoCapture(video_path, cv2.CAP_DSHOW)
+    desired_fps = 24
+
+    # Get the current frame rate
+    current_fps = capture.get(cv2.CAP_PROP_FPS)
 
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         with mp_hands.Hands(min_detection_confidence=min_detection_confidence,
@@ -185,6 +199,17 @@ def main():
 
                 if not handle_key_press(key):
                     break
+                
+                # Get the current frame rate
+                current_fps = capture.get(cv2.CAP_PROP_FPS)
+
+                # Calculate the ratio to adjust frame rate
+                ratio = current_fps / desired_fps
+
+                # Delay to match the desired frame rate
+                if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord('q'):
+                    break
+
 
     cv2.destroyAllWindows()
     capture.release()

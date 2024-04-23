@@ -6,11 +6,13 @@ from sign_language.src.config import SEQ_LEN, THRESH_HOLD
 
 
 
-def getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res):
+def getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,draw_landmarks_flag):
     image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
 
     image, results = mediapipe_detection(image, holistic)
-    draw(image, results)
+
+    if draw_landmarks_flag:
+        draw(image, results)
                         
     try:
         landmarks = extract_coordinates(results)
