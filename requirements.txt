@@ -78,7 +78,7 @@ oauthlib==3.2.2
 onnx==1.14.0
 onnxruntime==1.16.0
 opencv-contrib-python==4.9.0.80
-opencv-python==4.9.0.80
+# opencv-python==4.9.0.80
 opencv-python-headless==4.9.0.80
 opt-einsum==3.3.0
 packaging==23.2
