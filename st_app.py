@@ -396,7 +396,7 @@ def run_sign_detector():
     cam = webrtc_streamer(
         key="Sign-Language-Detector",
         mode=WebRtcMode.SENDRECV,
-        # rtc_configuration=RTC_CONFIGURATION,
+        rtc_configuration=RTC_CONFIGURATION,
         # video_processor_factory=OpenCVVideoProcessor,
         async_processing=True,
         video_frame_callback=video_frame_callback
