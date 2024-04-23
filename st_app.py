@@ -328,6 +328,20 @@ RTC_CONFIGURATION = RTCConfiguration(
     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
 )
 
+
+# from twilio.rest import Client
+# import os
+# # Find your Account SID and Auth Token at twilio.com/console
+# # and set the environment variables. See http://twil.io/secure
+# account_sid = os.environ['TWILIO_ACCOUNT_SID']
+# auth_token = os.environ['TWILIO_AUTH_TOKEN']
+# client = Client(account_sid, auth_token)
+
+# token = client.tokens.create()
+from turn import get_ice_servers
+
+
+
 def video_frame_callback(frame):
     
 
@@ -384,6 +398,7 @@ def video_frame_callback(frame):
     # image = frame
     return av.VideoFrame.from_ndarray(image,format="bgr24")
     
+
 def run_sign_detector():
 
     # global numba
@@ -396,7 +411,11 @@ def run_sign_detector():
     cam = webrtc_streamer(
         key="Sign-Language-Detector",
         mode=WebRtcMode.SENDRECV,
-        rtc_configuration=RTC_CONFIGURATION,
+        # rtc_configuration=RTC_CONFIGURATION,
+        rtc_configuration={
+        "iceServers": get_ice_servers(),
+        "iceTransportPolicy": "relay",
+        },
         # video_processor_factory=OpenCVVideoProcessor,
         async_processing=True,
         video_frame_callback=video_frame_callback
