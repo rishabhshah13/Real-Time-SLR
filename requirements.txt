@@ -24,3 +24,4 @@ Flask-RESTful==0.3.10
 mediapipe==0.10.5
 autocorrect==2.6.1
 imageio==2.34.1
+PyYAML==6.0.1
