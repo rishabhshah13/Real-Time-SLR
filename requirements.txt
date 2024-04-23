@@ -22,3 +22,4 @@ Flask==3.0.3
 Flask-Cors==4.0.0
 Flask-RESTful==0.3.10
 mediapipe==0.10.5
+autocorrect==2.6.1
