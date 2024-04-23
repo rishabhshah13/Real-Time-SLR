@@ -1,3 +1,9 @@
+conda deactivate 
+conda activate fleury-env
+cd Desktop/slrfinal/ASL-Finger-Spelling-To-Text/
+
+
+
 az acr create --resource-group slrRG --name slrregistry --sku Basic
 
 az acr login -n slrregistry
@@ -9,3 +15,20 @@ docker push slrregistry.azurecr.io/slrapp:v1
 
 
 
+export RESOURCE_GROUP="slrRG"
+export CONTAINER_REGISTRY="slrregistry"
+export IMAGE_NAME="slrimage"
+export WEBAPP_NAME="slrapp1"
+export SERVICE_PLAN_NAME="F1"
+
+
+az acr build --registry $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --image $IMAGE_NAME .
+az webapp create -g $RESOURCE_GROUP -p $SERVICE_PLAN_NAME -n $WEBAPP_NAME -i $CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
+
+
+az acr create --name $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --sku basic --admin-enabled true
+# az acr build --registry $CONTAINER_REGISTRY --resource-group $RESOURCE_GROUP --image $IMAGE_NAME .
+
+# re-tag the image and push it to the repository
+docker image tag tst $CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
+docker push $CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
