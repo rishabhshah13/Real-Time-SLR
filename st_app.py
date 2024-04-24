@@ -136,7 +136,7 @@ def parse_opt():
 
 def process_input(opt):
 
-    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode
+    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
 
     
     
@@ -169,6 +169,7 @@ TIMING = opt.timing
 autocorrect = opt.autocorrect
 numberMode = False
 fingerspellingmode = True
+draw_landmarks_flag = False
 file_path = "config.yaml"
 
 video_path, fps, webcam_width, webcam_height = process_input(opt)
@@ -182,7 +183,7 @@ res = []
 
 
 def handle_key_press(key):
-    global output, saveGIF, saveVDO, numberMode, fingerspellingmode
+    global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
 
     # Press 'Esc' to quit
     if key == 27:
@@ -275,6 +276,16 @@ def change_numbermodemode():
 def clearoutput():
     edit_yaml_variable(file_path, 'output', [])
     edit_yaml_variable(file_path, '_output', [[],[]])
+
+
+def change_drawlandmarks():
+
+    global draw_landmarks_flag
+
+    print("Current draw_landmarks_flag: ", draw_landmarks_flag)
+    draw_landmarks_flag = read_yaml_variable(file_path, 'draw_landmarks_flag')
+    draw_landmarks_flag = not draw_landmarks_flag
+    edit_yaml_variable(file_path, 'draw_landmarks_flag', draw_landmarks_flag)  
     
 
 
@@ -282,6 +293,7 @@ def clearoutput():
 st.button("fingerspelling", on_click=change_fingerspellingmode)
 st.button("numbermode", on_click=change_numbermodemode)
 st.button("clearoutput", on_click=clearoutput)
+st.button("drawlandmarks", on_click=change_drawlandmarks)
 
 
 
@@ -294,12 +306,13 @@ st.button("clearoutput", on_click=clearoutput)
 add_keyboard_shortcuts({
     'k': 'fingerspelling',
     'l': 'numbermode',
-    'v': 'clearoutput'
+    'v': 'clearoutput',
+    'd': 'drawlandmarks'
 
 })
 
 
-def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res):
+def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res,drawlandmarks):
     global letter_model, number_model, tflite_keras_model, sequence_data
     
     if fingerspellingmode:
@@ -307,14 +320,14 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
             from fingerspellinginference import recognize_fingerpellings
             image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
                                                                             number_model, hands, current_hand, output,
-                                                                            _output, TIMING, autocorrect) 
+                                                                            _output, TIMING, autocorrect,drawlandmarks) 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
             from glossinference import getglosses
-            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res)
+            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,drawlandmarks)
 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -349,6 +362,9 @@ def video_frame_callback(frame):
 
     fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
     numberMode = read_yaml_variable(file_path, 'numberMode')
+    drawlandmarks = read_yaml_variable(file_path, 'draw_landmarks_flag')
+
+    print()
 
     output = read_yaml_variable(file_path, 'output')
     _output = read_yaml_variable(file_path, '_output')
@@ -366,8 +382,7 @@ def video_frame_callback(frame):
             else:
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            image, output, current_hand, _output = process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING,
-                                                        autocorrect,holistic,hands,_output,res)
+            image, output, current_hand, _output = process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING,autocorrect,holistic,hands,_output,res,drawlandmarks)
 
 
             output_text = str(output)
@@ -412,10 +427,10 @@ def run_sign_detector():
         key="Sign-Language-Detector",
         mode=WebRtcMode.SENDRECV,
         # rtc_configuration=RTC_CONFIGURATION,
-        rtc_configuration={
-        "iceServers": get_ice_servers(),
-        "iceTransportPolicy": "relay",
-        },
+        # rtc_configuration={
+        # "iceServers": get_ice_servers(),
+        # "iceTransportPolicy": "relay",
+        # },
         # video_processor_factory=OpenCVVideoProcessor,
         async_processing=True,
         video_frame_callback=video_frame_callback
@@ -423,6 +438,7 @@ def run_sign_detector():
 
 def main():
     st.title("Real Time Sign Language Recognition")
+    st.subheader('Tip: Press "k" to enable fingerspelling | "l" for number mode | "v" to clear output | "d" to draw landmarks')
     run_sign_detector()
 
 
