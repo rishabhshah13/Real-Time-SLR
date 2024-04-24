@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from scripts.gloss.my_functions import *
-from sign_language.src.landmarks_extraction import mediapipe_detection, draw, extract_coordinates 
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
+from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates 
+from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 
 
 

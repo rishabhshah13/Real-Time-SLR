@@ -29,7 +29,6 @@ encoder = lambda x: s2p_map.get(x.lower())
 decoder = lambda x: p2s_map.get(x)
 
 # Load TFLite model
-# models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
 models = [get_model() for _ in gloss_models_path]
 for model, path in zip(models, gloss_models_path):
     model.load_weights(path)
@@ -70,8 +69,8 @@ def handle_key_press(key):
 
     # Press 's' to save result
     elif key == ord('s'):
-        saveGIF = True
-        saveVDO = True
+        # saveGIF = True
+        # saveVDO = True
         return False
         
 
@@ -152,7 +151,12 @@ def main():
     current_hand = 0
     res = []
 
+
     capture = cv2.VideoCapture(video_path, cv2.CAP_DSHOW)
+    # print(capture.read()[0])
+    if capture.read()[0] is False:
+        capture = cv2.VideoCapture(video_path)
+
     desired_fps = 24
 
     # Get the current frame rate
@@ -163,6 +167,8 @@ def main():
                             min_tracking_confidence=min_tracking_confidence, max_num_hands=MAX_HANDS) as hands:
             while capture.isOpened():
                 success, image = capture.read()
+
+
                 if not success:
                     if video_path == 0:
                         print("Ignoring empty camera frame.")
@@ -191,7 +197,10 @@ def main():
                 cv2.rectangle(image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1)
                 cv2.putText(image, mode_text, (10, 40), FONT, 0.5, BLACK, 2)
 
+                cv2.putText(image, help_text, (10, 70), FONT, 0.5, BLACK, 2)
+
                 cv2.imshow('American Sign Language', image)
+
                 frame_array.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
                 key = cv2.waitKey(5) & 0xFF
@@ -204,6 +213,7 @@ def main():
 
                 # Calculate the ratio to adjust frame rate
                 ratio = current_fps / desired_fps
+
 
                 # Delay to match the desired frame rate
                 if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord('q'):

@@ -69,7 +69,7 @@ model_number_path = f"{MODEL_PATH}/classify_number_model.p"
 gloss_models_path = ['models/gloss/islr-fp16-192-8-seed_all42-foldall-last.h5']
 
 index_map = 'data/sign_to_prediction_index_map.json'
-
+help_text = 'Tip: Press "k" to enable fingerspelling | "l" for number mode | "v" to clear output | "d" to draw landmarks'
 
 if __name__ == "__main__":
     print(NUM_NODES)
