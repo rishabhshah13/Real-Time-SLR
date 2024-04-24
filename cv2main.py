@@ -5,10 +5,11 @@ import numpy as np
 import mediapipe as mp
 from autocorrect import Speller
 from utils import load_model, save_gif, save_video
-from sign_language.my_functions import *
-from sign_language.src.landmarks_extraction import load_json_file
-from sign_language.src.backbone import TFLiteModel, get_model
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
+from scripts.gloss.my_functions import *
+from scripts.gloss.landmarks_extraction import load_json_file
+from scripts.gloss.landmarks_extraction import load_json_file
+from scripts.gloss.backbone import TFLiteModel, get_model
+from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 from config import *
 
 mp_holistic = mp.solutions.holistic
@@ -22,15 +23,15 @@ letter_model = load_model(model_letter_path)
 number_model = load_model(model_number_path)
 
 # Load maps
-s2p_map = {k.lower(): v for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-p2s_map = {v: k for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
+s2p_map = {k.lower(): v for k, v in load_json_file(index_map).items()}
+p2s_map = {v: k for k, v in load_json_file(index_map).items()}
 encoder = lambda x: s2p_map.get(x.lower())
 decoder = lambda x: p2s_map.get(x)
 
 # Load TFLite model
-models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
-models = [get_model() for _ in models_path]
-for model, path in zip(models, models_path):
+# models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
+models = [get_model() for _ in gloss_models_path]
+for model, path in zip(models, gloss_models_path):
     model.load_weights(path)
 tflite_keras_model = TFLiteModel(islr_models=models)
 sequence_data = []
@@ -91,17 +92,15 @@ def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TI
 
     if fingerspellingmode:
         try:
-            from fingerspellinginference import recognize_fingerpellings
+            from scripts.inference.fingerspellinginference import recognize_fingerpellings
             image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
-                                                                            number_model, hands, current_hand, output,
-
-
+                                                                            number_model, hands, current_hand, output, _output,TIMING, autocorrect,draw_landmarks_flag)
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
-            from glossinference import getglosses
+            from scripts.inference.glossinference import getglosses
             image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,draw_landmarks_flag)
 
         except Exception as error:

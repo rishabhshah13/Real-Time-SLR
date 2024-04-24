@@ -14,7 +14,7 @@ import threading
 import numpy as np
 import mediapipe as mp
 import cv2
-from sign_language.my_functions import *
+from scripts.gloss.my_functions import *
 from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 import av
 
@@ -25,7 +25,7 @@ import numpy as np
 import mediapipe as mp
 from autocorrect import Speller
 from utils import load_model, save_gif, save_video
-from sign_language.my_functions import *
+from scripts.gloss.my_functions import *
 from sign_language.src.landmarks_extraction import load_json_file
 from sign_language.src.backbone import TFLiteModel, get_model
 from sign_language.src.config import SEQ_LEN, THRESH_HOLD
@@ -351,7 +351,7 @@ RTC_CONFIGURATION = RTCConfiguration(
 # client = Client(account_sid, auth_token)
 
 # token = client.tokens.create()
-from turn import get_ice_servers
+from scripts.turn import get_ice_servers
 
 
 

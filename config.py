@@ -62,9 +62,13 @@ MAX_HANDS = 1                   #@param {type: "integer"}
 min_detection_confidence = 0.6  #@param {type:"slider", min:0, max:1, step:0.01}
 min_tracking_confidence  = 0.5  #@param {type:"slider", min:0, max:1, step:0.01}
 
-MODEL_PATH = "./classifier"
+MODEL_PATH = "models/fingerspelling"
 model_letter_path = f"{MODEL_PATH}/classify_letter_model.p"
 model_number_path = f"{MODEL_PATH}/classify_number_model.p"
+
+gloss_models_path = ['models/gloss/islr-fp16-192-8-seed_all42-foldall-last.h5']
+
+index_map = 'data/sign_to_prediction_index_map.json'
 
 
 if __name__ == "__main__":
