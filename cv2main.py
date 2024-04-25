@@ -7,7 +7,6 @@ from autocorrect import Speller
 from utils import load_model, save_gif, save_video
 from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
-from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
 from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 from config import *
@@ -153,7 +152,6 @@ def main():
 
 
     capture = cv2.VideoCapture(video_path, cv2.CAP_DSHOW)
-    # print(capture.read()[0])
     if capture.read()[0] is False:
         capture = cv2.VideoCapture(video_path)
 

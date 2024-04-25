@@ -1,7 +1,32 @@
 _output:
-- []
+- - O
+  - O
+  - O
+  - Q
+  - C
+  - C
+  - C
+  - O
+  - O
+  - H
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
+  - O
 - []
 draw_landmarks_flag: true
 fingerspellingmode: true
 numberMode: false
-output: []
+output:
+- D
+- Kjkjkjkjkjk

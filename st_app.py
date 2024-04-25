@@ -6,9 +6,9 @@ import cv2
 import numpy as np
 import time
 import mediapipe as mp
-from sign_language.src.backbone import TFLiteModel, get_model
-from sign_language.src.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
+from scripts.gloss.backbone import TFLiteModel, get_model
+from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
+from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 import streamlit as st
 import threading
 import numpy as np
@@ -26,10 +26,16 @@ import mediapipe as mp
 from autocorrect import Speller
 from utils import load_model, save_gif, save_video
 from scripts.gloss.my_functions import *
-from sign_language.src.landmarks_extraction import load_json_file
-from sign_language.src.backbone import TFLiteModel, get_model
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
+from scripts.gloss.landmarks_extraction import load_json_file
+from scripts.gloss.backbone import TFLiteModel, get_model
+from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 from config import *
+
+from scripts.inference.fingerspellinginference import recognize_fingerpellings
+from scripts.inference.glossinference import getglosses
+
+from streamlit_shortcuts import add_keyboard_shortcuts
+
 
 mp_holistic = mp.solutions.holistic
 mp_hands = mp.solutions.hands
@@ -80,8 +86,8 @@ def load_modela(model_path):
 
 
 # Load maps
-s2p_map = {k.lower(): v for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-p2s_map = {v: k for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
+s2p_map = {k.lower(): v for k, v in load_json_file(index_map).items()}
+p2s_map = {v: k for k, v in load_json_file(index_map).items()}
 encoder = lambda x: s2p_map.get(x.lower())
 decoder = lambda x: p2s_map.get(x)
 
@@ -93,9 +99,9 @@ sequence_data = []
 if "kerasmodel" not in st.session_state.keys():
     print("Loading Keras model")
 
-    models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
-    models = [get_model() for _ in models_path]
-    for model, path in zip(models, models_path):
+    # models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
+    models = [get_model() for _ in gloss_models_path]
+    for model, path in zip(models, gloss_models_path):
         model.load_weights(path)
 
     tflite_keras_model = TFLiteModel(islr_models=models)
@@ -215,14 +221,18 @@ def handle_key_press(key):
 
 
 
+## CHECK THIS ONE PROPERLY!
 import yaml
-
 def edit_yaml_variable(file_path, variable_name, new_value):
     try:
         # Load the YAML file
-        with open(file_path, "r") as f:
-            config = yaml.safe_load(f)
-    except FileNotFoundError:
+        config = None
+        while config == None:
+            with open(file_path, "r") as f:
+                config = yaml.safe_load(f)
+            print("Edit Config" ,config)
+    except FileNotFoundError as e:
+        print("Error:", e)
         # If file not found, create an empty config
         config = {}
 
@@ -232,14 +242,18 @@ def edit_yaml_variable(file_path, variable_name, new_value):
     # Write the changes back to the YAML file
     with open(file_path, "w") as f:
         yaml.dump(config, f, default_flow_style=False)
+    
+    print("Final Edit Config" ,config)
 
 
 def read_yaml_variable(file_path, variable_name):
     try:
         # Load the YAML file
-        with open(file_path, "r") as f:
-            config = yaml.safe_load(f)
-            
+        config = None
+        while config == None:
+            with open(file_path, "r") as f:
+                config = yaml.safe_load(f)
+            print("Read Config ", config)
         # Return the value of the variable if exists, otherwise return None
         return config.get(variable_name)
     
@@ -249,7 +263,6 @@ def read_yaml_variable(file_path, variable_name):
 
 
 
-from streamlit_shortcuts import add_keyboard_shortcuts
 
 def change_fingerspellingmode():
     global fingerspellingmode
@@ -317,7 +330,6 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
     
     if fingerspellingmode:
         try:
-            from fingerspellinginference import recognize_fingerpellings
             image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
                                                                             number_model, hands, current_hand, output,
                                                                             _output, TIMING, autocorrect,drawlandmarks) 
@@ -326,7 +338,6 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
-            from glossinference import getglosses
             image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,drawlandmarks)
 
         except Exception as error:
@@ -363,8 +374,6 @@ def video_frame_callback(frame):
     fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
     numberMode = read_yaml_variable(file_path, 'numberMode')
     drawlandmarks = read_yaml_variable(file_path, 'draw_landmarks_flag')
-
-    print()
 
     output = read_yaml_variable(file_path, 'output')
     _output = read_yaml_variable(file_path, '_output')
