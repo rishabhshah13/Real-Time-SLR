@@ -1,9 +1,11 @@
 _output:
-- []
+- - P
+  - M
+  - C
 - []
 draw_landmarks_flag: true
 fingerspellingmode: true
 numberMode: false
-output:
-- Z
+output: []
+
 - J
