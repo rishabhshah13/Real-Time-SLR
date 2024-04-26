@@ -1,36 +1,68 @@
-# # %%
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import cv2
-import numpy as np
-import time
 import mediapipe as mp
-from sign_language.src.backbone import TFLiteModel, get_model
-from sign_language.src.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
+from scripts.gloss.backbone import TFLiteModel, get_model
+from scripts.gloss.landmarks_extraction import load_json_file 
+from config.config import SEQ_LEN, THRESH_HOLD
 import streamlit as st
 import threading
 import numpy as np
-import mediapipe as mp
 import cv2
-from sign_language.my_functions import *
+from scripts.gloss.my_functions import *
 from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 import av
 
 import sys
-import cv2
 import argparse
-import numpy as np
-import mediapipe as mp
-from autocorrect import Speller
-from utils import load_model, save_gif, save_video
-from sign_language.my_functions import *
-from sign_language.src.landmarks_extraction import load_json_file
-from sign_language.src.backbone import TFLiteModel, get_model
-from sign_language.src.config import SEQ_LEN, THRESH_HOLD
-from config import *
 
+from autocorrect import Speller
+from scripts.utils import load_model
+from scripts.inference.fingerspellinginference import recognize_fingerpellings
+from scripts.inference.glossinference import getglosses
+from scripts.turn import get_ice_servers
+from config.config import *
+
+from streamlit_shortcuts import add_keyboard_shortcuts
+
+
+# from flask import Flask, request, jsonify
+# from flask_cors import CORS
+# import cv2
+# import numpy as np
+# import time
+# import mediapipe as mp
+# from scripts.gloss.backbone import TFLiteModel, get_model
+# from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
+# from config.config import SEQ_LEN, THRESH_HOLD
+# import streamlit as st
+# import threading
+# import numpy as np
+# import mediapipe as mp
+# import cv2
+# from scripts.gloss.my_functions import *
+# from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
+# import av
+
+# import sys
+# import cv2
+# import argparse
+# import numpy as np
+# import mediapipe as mp
+# from autocorrect import Speller
+# from scripts.utils import load_model, save_gif, save_video
+# from scripts.gloss.my_functions import *
+# from scripts.gloss.landmarks_extraction import load_json_file
+# from scripts.gloss.backbone import TFLiteModel, get_model
+# from config.config import *
+
+# from scripts.inference.fingerspellinginference import recognize_fingerpellings
+# from scripts.inference.glossinference import getglosses
+# from scripts.turn import get_ice_servers
+
+# from streamlit_shortcuts import add_keyboard_shortcuts
+
+
+
+# Initialize MediaPipe solutions
 mp_holistic = mp.solutions.holistic
 mp_hands = mp.solutions.hands
 
@@ -41,47 +73,24 @@ spell = Speller(lang='en')
 import pickle
 @st.cache_resource()
 def load_modela(model_path):
+    """
+    Load the TFLite model from the given path.
+
+    Args:
+        model_path (str): Path to the TFLite model file.
+
+    Returns:
+        model: Loaded TFLite model.
+    """
     with open(model_path, 'rb') as model_file:
         model_dict = pickle.load(model_file)
         model = model_dict['model']
     return model
 
-#####################
-# letter_model = load_modela(model_letter_path)
-# number_model = load_modela(model_number_path)
-
-# # letter_model = load_model(model_letter_path)
-# # number_model = load_model(model_number_path)
-
-# # Load maps
-# s2p_map = {k.lower(): v for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-# p2s_map = {v: k for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-# encoder = lambda x: s2p_map.get(x.lower())
-# decoder = lambda x: p2s_map.get(x)
-
-# # Load TFLite model
-# models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
-# models = [get_model() for _ in models_path]
-# for model, path in zip(models, models_path):
-#     model.load_weights(path)
-
-
-# @st.cache_resource()
-# def kmodel():
-#     return TFLiteModel(islr_models=models)
-# tflite_keras_model = kmodel()
-
-
-# tflite_keras_model = TFLiteModel(islr_models=models)
-# sequence_data = []
-#####################
-
-
-
 
 # Load maps
-s2p_map = {k.lower(): v for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-p2s_map = {v: k for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
+s2p_map = {k.lower(): v for k, v in load_json_file(index_map).items()}
+p2s_map = {v: k for k, v in load_json_file(index_map).items()}
 encoder = lambda x: s2p_map.get(x.lower())
 decoder = lambda x: p2s_map.get(x)
 
@@ -93,9 +102,9 @@ sequence_data = []
 if "kerasmodel" not in st.session_state.keys():
     print("Loading Keras model")
 
-    models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
-    models = [get_model() for _ in models_path]
-    for model, path in zip(models, models_path):
+    # models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
+    models = [get_model() for _ in gloss_models_path]
+    for model, path in zip(models, gloss_models_path):
         model.load_weights(path)
 
     tflite_keras_model = TFLiteModel(islr_models=models)
@@ -120,6 +129,12 @@ number_model = st.session_state["number_model"]
 
 
 def parse_opt():
+    """
+    Parse command line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--source', type=str, default=None, help='Video Path/0 for Webcam')
     parser.add_argument('-a', '--autocorrect', action='store_true', help='Autocorrect Misspelled Word')
@@ -135,11 +150,17 @@ def parse_opt():
 
 
 def process_input(opt):
+    """
+    Process command line arguments.
 
-    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
+    Args:
+        opt (argparse.Namespace): Parsed arguments.
 
-    
-    
+    Returns:
+        tuple: Tuple containing video_path, fps, webcam_width, webcam_height.
+    """
+    global saveGIF, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
+
     print(f"Timing Threshold is {TIMING} frames.")
     print(f"Using Autocorrect: {autocorrect}")
 
@@ -163,14 +184,13 @@ lock = threading.Lock()
 opt = parse_opt()
 
 saveGIF = opt.gif
-saveVDO = opt.video
 source = opt.source
 TIMING = opt.timing
 autocorrect = opt.autocorrect
 numberMode = False
 fingerspellingmode = True
 draw_landmarks_flag = False
-file_path = "config.yaml"
+file_path = "config/config.yaml"
 
 video_path, fps, webcam_width, webcam_height = process_input(opt)
 _output = [[], []]
@@ -180,49 +200,25 @@ current_hand = 0
 res = []
 
 
-
-
-def handle_key_press(key):
-    global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
-
-    # Press 'Esc' to quit
-    if key == 27:
-        return False
-
-    # Press 'Backspace' to delete last word
-    elif key == 8:
-        output.pop()
-
-    # elif key == ord(' '):
-    #     fingerspellingmode = not fingerspellingmode
-
-    # # Press 's' to save result
-    # elif key == ord('s'):
-    #     saveGIF = True
-    #     saveVDO = True
-    #     return False
-
-    # Press 'm' to change mode between alphabet and number
-    elif key == ord('m'):
-        if fingerspellingmode:
-            numberMode = not numberMode
-
-    # Press 'c' to clear output
-    elif key == ord('c'):
-        output.clear()
-
-    return True
-
-
-
+## CHECK THIS ONE PROPERLY!
 import yaml
-
 def edit_yaml_variable(file_path, variable_name, new_value):
+    """
+    Edit a variable in a YAML file.
+
+    Args:
+        file_path (str): Path to the YAML file.
+        variable_name (str): Name of the variable to be edited.
+        new_value: New value of the variable.
+    """
     try:
         # Load the YAML file
-        with open(file_path, "r") as f:
-            config = yaml.safe_load(f)
-    except FileNotFoundError:
+        config = None
+        while config == None:
+            with open(file_path, "r") as f:
+                config = yaml.safe_load(f)
+    except FileNotFoundError as e:
+        print("Error:", e)
         # If file not found, create an empty config
         config = {}
 
@@ -231,15 +227,27 @@ def edit_yaml_variable(file_path, variable_name, new_value):
 
     # Write the changes back to the YAML file
     with open(file_path, "w") as f:
-        yaml.dump(config, f, default_flow_style=False)
+        yaml.dump(config, f, default_flow_style=False)    
 
 
 def read_yaml_variable(file_path, variable_name):
+    """
+    Read a variable from a YAML file.
+
+    Args:
+        file_path (str): Path to the YAML file.
+        variable_name (str): Name of the variable to be read.
+
+    Returns:
+        Any: Value of the variable if it exists, None otherwise.
+    """
     try:
         # Load the YAML file
-        with open(file_path, "r") as f:
-            config = yaml.safe_load(f)
-            
+        config = None
+        while config == None:
+            with open(file_path, "r") as f:
+                config = yaml.safe_load(f)
+            print("Read Config ", config)
         # Return the value of the variable if exists, otherwise return None
         return config.get(variable_name)
     
@@ -249,9 +257,10 @@ def read_yaml_variable(file_path, variable_name):
 
 
 
-from streamlit_shortcuts import add_keyboard_shortcuts
-
 def change_fingerspellingmode():
+    """
+    Change the fingerspelling mode.
+    """
     global fingerspellingmode
     print("Current fingerspellingmode: ", fingerspellingmode)
     fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
@@ -265,6 +274,9 @@ def change_fingerspellingmode():
 
 
 def change_numbermodemode():
+    """
+    Change the number mode.
+    """
     global numberMode
 
     global numberMode
@@ -274,11 +286,17 @@ def change_numbermodemode():
     edit_yaml_variable(file_path, 'numberMode', numberMode)
 
 def clearoutput():
+    """
+    Clear the output.
+    """
     edit_yaml_variable(file_path, 'output', [])
     edit_yaml_variable(file_path, '_output', [[],[]])
 
 
 def change_drawlandmarks():
+    """
+    Change the draw landmarks flag.
+    """
 
     global draw_landmarks_flag
 
@@ -288,20 +306,11 @@ def change_drawlandmarks():
     edit_yaml_variable(file_path, 'draw_landmarks_flag', draw_landmarks_flag)  
     
 
-
-# st.button("delete", on_click=delete_callback)
 st.button("fingerspelling", on_click=change_fingerspellingmode)
 st.button("numbermode", on_click=change_numbermodemode)
 st.button("clearoutput", on_click=clearoutput)
 st.button("drawlandmarks", on_click=change_drawlandmarks)
 
-
-
-# add_keyboard_shortcuts({
-#     'Ctrl+Alt+k': 'fingerspelling',
-#     'Ctrl+Alt+l': 'numbermode',
-
-# })
 
 add_keyboard_shortcuts({
     'k': 'fingerspelling',
@@ -313,11 +322,30 @@ add_keyboard_shortcuts({
 
 
 def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res,drawlandmarks):
+    """
+    Process a single frame.
+
+    Args:
+        image (ndarray): Input image.
+        fingerspellingmode (bool): Fingerspelling mode flag.
+        numberMode (bool): Number mode flag.
+        output (list): List containing detected gestures/characters.
+        current_hand (int): Current hand index.
+        TIMING (int): Timing threshold.
+        autocorrect (bool): Autocorrect misspelled word flag.
+        holistic (Holistic): MediaPipe Holistic instance.
+        hands (Hands): MediaPipe Hands instance.
+        _output (list): List containing previous output.
+        res (list): List to store recognition results.
+        drawlandmarks (bool): Flag to draw landmarks.
+
+    Returns:
+        tuple: Processed image, updated output list, updated current hand index, updated _output list.
+    """
     global letter_model, number_model, tflite_keras_model, sequence_data
     
     if fingerspellingmode:
         try:
-            from fingerspellinginference import recognize_fingerpellings
             image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
                                                                             number_model, hands, current_hand, output,
                                                                             _output, TIMING, autocorrect,drawlandmarks) 
@@ -326,7 +354,6 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
-            from glossinference import getglosses
             image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,drawlandmarks)
 
         except Exception as error:
@@ -342,29 +369,21 @@ RTC_CONFIGURATION = RTCConfiguration(
 )
 
 
-# from twilio.rest import Client
-# import os
-# # Find your Account SID and Auth Token at twilio.com/console
-# # and set the environment variables. See http://twil.io/secure
-# account_sid = os.environ['TWILIO_ACCOUNT_SID']
-# auth_token = os.environ['TWILIO_AUTH_TOKEN']
-# client = Client(account_sid, auth_token)
-
-# token = client.tokens.create()
-from turn import get_ice_servers
-
-
-
 def video_frame_callback(frame):
-    
+    """
+    Video frame callback function for WebRTC streaming.
 
+    Args:
+        frame (av.VideoFrame): Video frame.
+
+    Returns:
+        av.VideoFrame: Processed video frame.
+    """
     global opt, video_path, fps, webcam_width, webcam_height, frame_array, current_hand, res #,  _output, output
 
     fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
     numberMode = read_yaml_variable(file_path, 'numberMode')
     drawlandmarks = read_yaml_variable(file_path, 'draw_landmarks_flag')
-
-    print()
 
     output = read_yaml_variable(file_path, 'output')
     _output = read_yaml_variable(file_path, '_output')
@@ -398,31 +417,16 @@ def video_frame_callback(frame):
 
             frame_array.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-            key = cv2.waitKey(5) & 0xFF
-
-            # if not handle_key_press(key):
-            #     break
-
-    # print(f"Gesture Recognition:\n{' '.join(output)}")
-
     edit_yaml_variable(file_path, 'output', output)
     edit_yaml_variable(file_path, '_output', _output)
     
-    # print(output)
-
-    # image = frame
     return av.VideoFrame.from_ndarray(image,format="bgr24")
     
 
 def run_sign_detector():
-
-    # global numba
-
-    # print(numba)
-    # if "numbb" in st.session_state:
-    #     print("Sesstopm stete", st.session_state.numbb)
-    # print(numbb)
-
+    """
+    Run the sign language detector.
+    """
     cam = webrtc_streamer(
         key="Sign-Language-Detector",
         mode=WebRtcMode.SENDRECV,
@@ -436,7 +440,11 @@ def run_sign_detector():
         video_frame_callback=video_frame_callback
     )
 
+
 def main():
+    """
+    Main function.
+    """
     st.title("Real Time Sign Language Recognition")
     st.subheader('Tip: Press "k" to enable fingerspelling | "l" for number mode | "v" to clear output | "d" to draw landmarks')
     run_sign_detector()
