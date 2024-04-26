@@ -1,61 +1,117 @@
-# Real Time Sign Language Recognition
+```markdown
+![Logo](/assets/sign_logo_straight.png)
 
-This project is a real-time sign language recognition system that can recognize American Sign Language (ASL) gestures from a live video stream. It utilizes the MediaPipe library for hand and body pose estimation and TensorFlow Lite models for fingerspelling and gesture recognition. The application is built using Python and Streamlit for the user interface.
+![GitHub](https://img.shields.io/github/license/209sontung/sign-language?style=flat-square)
+![GitHub top language](https://img.shields.io/github/languages/top/209sontung/sign-language?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/209sontung/sign-language?color=yellow&style=flat-square)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/209sontung/sign-language?color=orange&style=flat-square)
+
+# Real-time Sign Language Gesture Recognition Using 1DCNN + Transformers on MediaPipe landmarks
+
+## Overview
+Sign language is an important means of communication for individuals with hearing impairments. This project aims to build a real-time sign language gesture recognition system using deep learning techniques. The system utilizes 1D Convolutional Neural Networks (1DCNN) and Transformers to recognize sign language gestures based on the hand landmarks extracted from MediaPipe.
+
+## Prerequisites
+
+- Python 3.9
+- NumPy
+- Pandas
+- Matplotlib
+- OpenCV
+- MediaPipe
+- TensorFlow
 
 ## Installation
+1. Clone this repository to your local machine using either the HTTPS or SSH link provided on the repository's GitHub page. You can use the following command to clone the repository via HTTPS:
 
-To run this project, you need to follow these steps:
+```bash
+git clone https://github.com/209sontung/sign-language
+```
 
-1. Clone the repository:
+2. Once the repository is cloned, navigate to the root directory of the project:
 
-   ```bash
-   git clone <repository_url>
-   ```
+```bash
+cd sign-language
+```
 
-2. Install the required dependencies:
+3. It is recommended to create a virtual environment to isolate the dependencies of this project. You can create a virtual environment using venv module. Run the following command to create a virtual environment named "venv":
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+python3 -m venv sign-language
+```
 
-3. Run the application:
+4. Activate the virtual environment. The activation steps depend on the operating system you're using:
 
-   ```bash
-   streamlit run app.py
-   ```
+- For Windows:
+```bash
+venv\Scripts\activate
+```
+- For macOS/Linux:
+```bash
+source venv/bin/activate
+```
+
+5. Now, you can install the required dependencies by running the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
+6. Once the installation is complete, you're ready to use the real-time sign language gesture recognition system.
+
+**Note:** Make sure you have a webcam connected to your machine or available on your device for capturing hand gestures.
+
+You have successfully installed the system and are ready to use it for real-time sign language gesture recognition. Please refer to the [Usage](#usage) section in the `README.md` for instructions on how to run and utilize the system.
 
 ## Usage
+To use the sign language gesture recognition system, follow these steps:
 
-The application allows users to perform real-time sign language recognition using a webcam or a video file. Here are the main features:
+1. Ensure that you have installed all the required dependencies (see [Installation](#installation)).
 
-- **Fingerspelling Mode:** Toggle between fingerspelling mode and gesture recognition mode by pressing the "fingerspelling" button or using the "k" key.
-  
-- **Number Mode:** Switch between recognizing letters and numbers by pressing the "number mode" button or using the "l" key.
-  
-- **Clear Output:** Clear the recognized sign output by pressing the "clear output" button or using the "v" key.
-  
-- **Draw Landmarks:** Toggle the visibility of hand landmarks by pressing the "draw landmarks" button or using the "d" key.
+2. Run the main.py file, which contains the main script for real-time gesture recognition.
 
-## Configuration
+```bash
+python main.py
+```
 
-The application can be configured using a YAML file (`config.yaml`) located in the root directory. You can modify the following parameters:
+3. The system will start capturing your hand gestures using the webcam and display the recognized gestures in real-time.
 
-- `fingerspellingmode`: Set to `True` for fingerspelling mode and `False` for gesture recognition mode.
-  
-- `numberMode`: Set to `True` for number mode and `False` for letter mode.
-  
-- `draw_landmarks_flag`: Set to `True` to draw hand landmarks on the video stream.
+## Models
+The repository includes pre-trained models for sign language gesture recognition. The following models are available in the models directory:
+
+- islr-fp16-192-8-seed42-fold0-best.h5: Best model weights for fold 0.
+- islr-fp16-192-8-seed42-fold0-last.h5: Last model weights for fold 0.
+- islr-fp16-192-8-seed_all42-foldall-last.h5: Last model weights for all folds.
+
+## Directory Structure
+The directory structure of this repository is as follows:
+
+```bash
+├─ .gitignore
+├─ LICENSE
+├─ README.md
+├─ main.py
+├─ models
+│  ├─ islr-fp16-192-8-seed42-fold0-best.h5
+│  ├─ islr-fp16-192-8-seed42-fold0-last.h5
+│  └─ islr-fp16-192-8-seed_all42-foldall-last.h5
+├─ requirements.txt
+├─ Pipfile
+├─ Pipfile.lock
+└─ src
+   ├─ backbone.py
+   ├─ config.py
+   ├─ landmarks_extraction.py
+   ├─ sign_to_prediction_index_map.json
+   └─ utils.py
+```
+
+## Contributing
+Contributions to this project are welcome. If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
 
 ## Acknowledgments
-
-This project utilizes the following libraries and tools:
-
-- [MediaPipe](https://google.github.io/mediapipe/) for hand and body pose estimation.
-  
-- [TensorFlow Lite](https://www.tensorflow.org/lite) for running lightweight machine learning models.
-  
-- [Streamlit](https://streamlit.io/) for building interactive web applications with Python.
+Sincere gratitude is extended to @hoyso48 for providing the idea and initial implementation of the backbone model.
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. Feel free to use and modify the code as per the terms of the license.
+```

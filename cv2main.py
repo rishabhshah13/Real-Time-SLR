@@ -9,7 +9,7 @@ from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
 from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
-from config import *
+from config.config import *
 
 mp_holistic = mp.solutions.holistic
 mp_hands = mp.solutions.hands

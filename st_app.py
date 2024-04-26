@@ -29,7 +29,7 @@ from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
 from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
-from config import *
+from config.config import *
 
 from scripts.inference.fingerspellinginference import recognize_fingerpellings
 from scripts.inference.glossinference import getglosses
@@ -167,7 +167,7 @@ autocorrect = opt.autocorrect
 numberMode = False
 fingerspellingmode = True
 draw_landmarks_flag = False
-file_path = "config.yaml"
+file_path = "config/config.yaml"
 
 video_path, fps, webcam_width, webcam_height = process_input(opt)
 _output = [[], []]
