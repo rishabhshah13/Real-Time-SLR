@@ -8,26 +8,29 @@ ascii_string = string.ascii_lowercase.upper() + "?"
 labels_dict = {idx: value for idx, value in enumerate(ascii_string)}
 
 # Colors RGB Format
-BLACK  = (0, 0, 0)
-RED    = (255, 0, 0)
-GREEN  = (0, 255, 0)
-BLUE   = (0, 0, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 YELLOW = (0, 255, 255)
-WHITE  = (255, 255, 255)
+WHITE = (255, 255, 255)
 
 
 def draw_info_text(image, pos, hand_sign_text):
-    cv2.rectangle(
-        image, (pos[0] - 2, pos[1]), (pos[2] + 2, pos[1] - 20),
-        BLACK, -1
-    )
+    cv2.rectangle(image, (pos[0] - 2, pos[1]), (pos[2] + 2, pos[1] - 20), BLACK, -1)
 
     info_text = ""
     if hand_sign_text != "":
-        info_text = 'Label: ' + hand_sign_text
+        info_text = "Label: " + hand_sign_text
     cv2.putText(
-        image, info_text, (pos[0] + 5, pos[1] - 4),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 1, cv2.LINE_AA
+        image,
+        info_text,
+        (pos[0] + 5, pos[1] - 4),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.6,
+        WHITE,
+        1,
+        cv2.LINE_AA,
     )
     return image
 
@@ -92,67 +95,67 @@ def draw_landmarks(image, landmark_point):
     for index, landmark in enumerate(landmark_point):
         if index == 0:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 1:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 2:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 3:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 4:
             cv2.circle(image, (landmark[0], landmark[1]), 8, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK, 1)
         if index == 5:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 6:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 7:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 8:
             cv2.circle(image, (landmark[0], landmark[1]), 8, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK, 1)
         if index == 9:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 10:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 11:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 12:
             cv2.circle(image, (landmark[0], landmark[1]), 8, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK, 1)
         if index == 13:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 14:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 15:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 16:
             cv2.circle(image, (landmark[0], landmark[1]), 8, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK, 1)
         if index == 17:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 18:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 19:
             cv2.circle(image, (landmark[0], landmark[1]), 5, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 5, BLACK, 1)
         if index == 20:
             cv2.circle(image, (landmark[0], landmark[1]), 8, WHITE, -1)
-            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK,  1)
+            cv2.circle(image, (landmark[0], landmark[1]), 8, BLACK, 1)
 
     return image
 
@@ -163,7 +166,7 @@ def calc_landmark_list(image, landmarks):
     # Keypoint
     landmark_point = []
     for _, landmark in enumerate(landmarks.landmark):
-        landmark_x = min(int(landmark.x * image_width ), image_width  - 1)
+        landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
         landmark_point.append([landmark_x, landmark_y])
@@ -171,12 +174,12 @@ def calc_landmark_list(image, landmarks):
 
 
 def classify_landmark(landmark):
-    wrist         = landmark[0]
-    thump         = landmark[1:5]
-    index_finger  = landmark[5:9]
+    wrist = landmark[0]
+    thump = landmark[1:5]
+    index_finger = landmark[5:9]
     middle_finger = landmark[9:13]
-    ring_finger   = landmark[13:17]
-    pinky         = landmark[17:21]
+    ring_finger = landmark[13:17]
+    pinky = landmark[17:21]
     return [[wrist], thump, index_finger, middle_finger, ring_finger, pinky]
 
 
@@ -194,17 +197,14 @@ def save_gif(gif_array, fps=30, output_dir="./assets/result.gif"):
 
     # Convert to gif using the imageio.mimsave method
     imageio.mimwrite(
-        f'{output_dir}', gif_array, 
-        duration=duration, format='GIF', loop=0
+        f"{output_dir}", gif_array, duration=duration, format="GIF", loop=0
     )
     print(f"Save to {output_dir}!")
 
 
 def save_video(frame_array, width, height, fps=30, output_dir="./assets/result.mp4"):
     output_writer = cv2.VideoWriter(
-        f'{output_dir}',
-        cv2.VideoWriter_fourcc(*'mp4v'), 
-        fps, (width, height)
+        f"{output_dir}", cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height)
     )
 
     for frame in frame_array:
@@ -217,7 +217,7 @@ def save_video(frame_array, width, height, fps=30, output_dir="./assets/result.m
 
 # model_dict = pickle.load(open(model_path, 'rb'))
 def load_model(model_path):
-    with open(model_path, 'rb') as model_file:
+    with open(model_path, "rb") as model_file:
         model_dict = pickle.load(model_file)
-        model = model_dict['model']
+        model = model_dict["model"]
     return model

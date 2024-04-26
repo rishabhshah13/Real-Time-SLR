@@ -1,23 +1,28 @@
 import cv2
 import numpy as np
-from scripts.utils import calc_landmark_list, draw_landmarks as draw_landmarks_hands, draw_info_text
+from scripts.utils import (
+    calc_landmark_list,
+    draw_landmarks as draw_landmarks_hands,
+    draw_info_text,
+)
 from autocorrect import Speller
 from config.config import *
 
 # Autocorrect Word
-spell = Speller(lang='en')
+spell = Speller(lang="en")
+
 
 def get_output(idx, _output, output, TIMING, autocorrect):
     """
     Get output from predicted characters.
-    
+
     Args:
     - idx (int): Index of the output list.
     - _output (list): List of character sequences predicted from hand gestures.
     - output (list): List of recognized words.
     - TIMING (int): Threshold for timing to consider a character.
     - autocorrect (bool): Whether to autocorrect misspelled words.
-    
+
     Returns:
     - None
     """
@@ -47,7 +52,20 @@ def get_output(idx, _output, output, TIMING, autocorrect):
         output.append(text.title())
     return None
 
-def recognize_fingerpellings(image, numberMode, letter_model, number_model, hands, current_hand, output, _output, TIMING, autocorrect, draw_landmarks_flag):
+
+def recognize_fingerpellings(
+    image,
+    numberMode,
+    letter_model,
+    number_model,
+    hands,
+    current_hand,
+    output,
+    _output,
+    TIMING,
+    autocorrect,
+    draw_landmarks_flag,
+):
     """
     Recognize finger spellings from the given image.
 
@@ -112,7 +130,7 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
             max_y = int(max(y_values) * h)
 
             # Flip Left Hand to Right Hand
-            if handness == 'Left':
+            if handness == "Left":
                 x_values = list(map(lambda x: 1 - x, x_values))
                 min_x -= 10
 
@@ -125,17 +143,21 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
                 # Alphabets Prediction
                 prediction = letter_model.predict([np.asarray(data_aux)])
                 gesture = str(prediction[0]).title()
-                gesture = gesture if gesture != 'Unknown_Letter' else '?'
+                gesture = gesture if gesture != "Unknown_Letter" else "?"
             else:
                 # Numbers Prediction
                 prediction = number_model.predict([np.asarray(data_aux)])
                 gesture = str(prediction[0]).title()
-                gesture = gesture if gesture != 'Unknown_Number' else '?'
+                gesture = gesture if gesture != "Unknown_Number" else "?"
 
             # Draw Bounding Box
             if draw_landmarks_flag:
-                cv2.rectangle(image, (min_x - 20, min_y - 10), (max_x + 20, max_y + 10), BLACK, 4)
-                image = draw_info_text(image, [min_x - 20, min_y - 10, max_x + 20, max_y + 10], gesture)
+                cv2.rectangle(
+                    image, (min_x - 20, min_y - 10), (max_x + 20, max_y + 10), BLACK, 4
+                )
+                image = draw_info_text(
+                    image, [min_x - 20, min_y - 10, max_x + 20, max_y + 10], gesture
+                )
 
             _gesture.append(gesture)
 

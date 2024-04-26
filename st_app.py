@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 from scripts.gloss.backbone import TFLiteModel, get_model
-from scripts.gloss.landmarks_extraction import load_json_file 
+from scripts.gloss.landmarks_extraction import load_json_file
 from config.config import SEQ_LEN, THRESH_HOLD
 import streamlit as st
 import threading
@@ -31,7 +31,7 @@ from streamlit_shortcuts import add_keyboard_shortcuts
 # import time
 # import mediapipe as mp
 # from scripts.gloss.backbone import TFLiteModel, get_model
-# from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
+# from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file
 # from config.config import SEQ_LEN, THRESH_HOLD
 # import streamlit as st
 # import threading
@@ -61,16 +61,17 @@ from streamlit_shortcuts import add_keyboard_shortcuts
 # from streamlit_shortcuts import add_keyboard_shortcuts
 
 
-
 # Initialize MediaPipe solutions
 mp_holistic = mp.solutions.holistic
 mp_hands = mp.solutions.hands
 
 # Autocorrect Word
-spell = Speller(lang='en')
+spell = Speller(lang="en")
 
 # Load models
 import pickle
+
+
 @st.cache_resource()
 def load_modela(model_path):
     """
@@ -82,9 +83,9 @@ def load_modela(model_path):
     Returns:
         model: Loaded TFLite model.
     """
-    with open(model_path, 'rb') as model_file:
+    with open(model_path, "rb") as model_file:
         model_dict = pickle.load(model_file)
-        model = model_dict['model']
+        model = model_dict["model"]
     return model
 
 
@@ -120,7 +121,7 @@ if "letter_model" not in st.session_state.keys():
 
     letter_model = load_model(model_letter_path)
     number_model = load_model(model_number_path)
-  
+
     st.session_state["letter_model"] = letter_model
     st.session_state["number_model"] = number_model
 
@@ -136,17 +137,20 @@ def parse_opt():
         argparse.Namespace: Parsed arguments.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--source', type=str, default=None, help='Video Path/0 for Webcam')
-    parser.add_argument('-a', '--autocorrect', action='store_true', help='Autocorrect Misspelled Word')
-    parser.add_argument('-g', '--gif', action='store_true', help='Save GIF Result')
-    parser.add_argument('-v', '--video', action='store_true', help='Save Video Result')
-    parser.add_argument('-t', '--timing', type=int, default=8, help='Timing Threshold')
-    parser.add_argument('-wi', '--width',  type=int, default=800, help='Webcam Width')
-    parser.add_argument('-he', '--height', type=int, default=600, help='Webcam Height')
-    parser.add_argument('-f', '--fps', type=int, default=30, help='Webcam FPS')
+    parser.add_argument(
+        "-s", "--source", type=str, default=None, help="Video Path/0 for Webcam"
+    )
+    parser.add_argument(
+        "-a", "--autocorrect", action="store_true", help="Autocorrect Misspelled Word"
+    )
+    parser.add_argument("-g", "--gif", action="store_true", help="Save GIF Result")
+    parser.add_argument("-v", "--video", action="store_true", help="Save Video Result")
+    parser.add_argument("-t", "--timing", type=int, default=8, help="Timing Threshold")
+    parser.add_argument("-wi", "--width", type=int, default=800, help="Webcam Width")
+    parser.add_argument("-he", "--height", type=int, default=600, help="Webcam Height")
+    parser.add_argument("-f", "--fps", type=int, default=30, help="Webcam FPS")
     opt = parser.parse_args()
     return opt
-
 
 
 def process_input(opt):
@@ -176,7 +180,6 @@ def process_input(opt):
     return video_path, fps, webcam_width, webcam_height
 
 
-
 # Locking frames from multi threading
 lock = threading.Lock()
 
@@ -202,6 +205,8 @@ res = []
 
 ## CHECK THIS ONE PROPERLY!
 import yaml
+
+
 def edit_yaml_variable(file_path, variable_name, new_value):
     """
     Edit a variable in a YAML file.
@@ -227,7 +232,7 @@ def edit_yaml_variable(file_path, variable_name, new_value):
 
     # Write the changes back to the YAML file
     with open(file_path, "w") as f:
-        yaml.dump(config, f, default_flow_style=False)    
+        yaml.dump(config, f, default_flow_style=False)
 
 
 def read_yaml_variable(file_path, variable_name):
@@ -250,11 +255,10 @@ def read_yaml_variable(file_path, variable_name):
             print("Read Config ", config)
         # Return the value of the variable if exists, otherwise return None
         return config.get(variable_name)
-    
+
     except FileNotFoundError:
         # If file not found, return None
         return None
-
 
 
 def change_fingerspellingmode():
@@ -263,9 +267,9 @@ def change_fingerspellingmode():
     """
     global fingerspellingmode
     print("Current fingerspellingmode: ", fingerspellingmode)
-    fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
+    fingerspellingmode = read_yaml_variable(file_path, "fingerspellingmode")
     fingerspellingmode = not fingerspellingmode
-    edit_yaml_variable(file_path, 'fingerspellingmode', fingerspellingmode)
+    edit_yaml_variable(file_path, "fingerspellingmode", fingerspellingmode)
 
     if fingerspellingmode:
         st.write("Fingerspelling mode!")
@@ -281,16 +285,17 @@ def change_numbermodemode():
 
     global numberMode
     print("Current numberMode: ", numberMode)
-    numberMode = read_yaml_variable(file_path, 'numberMode')
+    numberMode = read_yaml_variable(file_path, "numberMode")
     numberMode = not numberMode
-    edit_yaml_variable(file_path, 'numberMode', numberMode)
+    edit_yaml_variable(file_path, "numberMode", numberMode)
+
 
 def clearoutput():
     """
     Clear the output.
     """
-    edit_yaml_variable(file_path, 'output', [])
-    edit_yaml_variable(file_path, '_output', [[],[]])
+    edit_yaml_variable(file_path, "output", [])
+    edit_yaml_variable(file_path, "_output", [[], []])
 
 
 def change_drawlandmarks():
@@ -301,10 +306,10 @@ def change_drawlandmarks():
     global draw_landmarks_flag
 
     print("Current draw_landmarks_flag: ", draw_landmarks_flag)
-    draw_landmarks_flag = read_yaml_variable(file_path, 'draw_landmarks_flag')
+    draw_landmarks_flag = read_yaml_variable(file_path, "draw_landmarks_flag")
     draw_landmarks_flag = not draw_landmarks_flag
-    edit_yaml_variable(file_path, 'draw_landmarks_flag', draw_landmarks_flag)  
-    
+    edit_yaml_variable(file_path, "draw_landmarks_flag", draw_landmarks_flag)
+
 
 st.button("fingerspelling", on_click=change_fingerspellingmode)
 st.button("numbermode", on_click=change_numbermodemode)
@@ -312,16 +317,25 @@ st.button("clearoutput", on_click=clearoutput)
 st.button("drawlandmarks", on_click=change_drawlandmarks)
 
 
-add_keyboard_shortcuts({
-    'k': 'fingerspelling',
-    'l': 'numbermode',
-    'v': 'clearoutput',
-    'd': 'drawlandmarks'
-
-})
+add_keyboard_shortcuts(
+    {"k": "fingerspelling", "l": "numbermode", "v": "clearoutput", "d": "drawlandmarks"}
+)
 
 
-def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res,drawlandmarks):
+def process_frame(
+    image,
+    fingerspellingmode,
+    numberMode,
+    output,
+    current_hand,
+    TIMING,
+    autocorrect,
+    holistic,
+    hands,
+    _output,
+    res,
+    drawlandmarks,
+):
     """
     Process a single frame.
 
@@ -343,18 +357,37 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
         tuple: Processed image, updated output list, updated current hand index, updated _output list.
     """
     global letter_model, number_model, tflite_keras_model, sequence_data
-    
+
     if fingerspellingmode:
         try:
-            image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
-                                                                            number_model, hands, current_hand, output,
-                                                                            _output, TIMING, autocorrect,drawlandmarks) 
+            image, current_hand, output, _output = recognize_fingerpellings(
+                image,
+                numberMode,
+                letter_model,
+                number_model,
+                hands,
+                current_hand,
+                output,
+                _output,
+                TIMING,
+                autocorrect,
+                drawlandmarks,
+            )
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
-            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,drawlandmarks)
+            image, sequence_data = getglosses(
+                output,
+                decoder,
+                tflite_keras_model,
+                sequence_data,
+                holistic,
+                image,
+                res,
+                drawlandmarks,
+            )
 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -379,49 +412,67 @@ def video_frame_callback(frame):
     Returns:
         av.VideoFrame: Processed video frame.
     """
-    global opt, video_path, fps, webcam_width, webcam_height, frame_array, current_hand, res #,  _output, output
+    global opt, video_path, fps, webcam_width, webcam_height, frame_array, current_hand, res  # ,  _output, output
 
-    fingerspellingmode = read_yaml_variable(file_path, 'fingerspellingmode')
-    numberMode = read_yaml_variable(file_path, 'numberMode')
-    drawlandmarks = read_yaml_variable(file_path, 'draw_landmarks_flag')
+    fingerspellingmode = read_yaml_variable(file_path, "fingerspellingmode")
+    numberMode = read_yaml_variable(file_path, "numberMode")
+    drawlandmarks = read_yaml_variable(file_path, "draw_landmarks_flag")
 
-    output = read_yaml_variable(file_path, 'output')
-    _output = read_yaml_variable(file_path, '_output')
+    output = read_yaml_variable(file_path, "output")
+    _output = read_yaml_variable(file_path, "_output")
 
     image = frame.to_ndarray(format="bgr24")
 
-
-    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        with mp_hands.Hands(min_detection_confidence=min_detection_confidence,
-                            min_tracking_confidence=min_tracking_confidence, max_num_hands=MAX_HANDS) as hands:
-
+    with mp_holistic.Holistic(
+        min_detection_confidence=0.5, min_tracking_confidence=0.5
+    ) as holistic:
+        with mp_hands.Hands(
+            min_detection_confidence=min_detection_confidence,
+            min_tracking_confidence=min_tracking_confidence,
+            max_num_hands=MAX_HANDS,
+        ) as hands:
 
             if video_path == 0:
                 image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             else:
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            image, output, current_hand, _output = process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING,autocorrect,holistic,hands,_output,res,drawlandmarks)
-
+            image, output, current_hand, _output = process_frame(
+                image,
+                fingerspellingmode,
+                numberMode,
+                output,
+                current_hand,
+                TIMING,
+                autocorrect,
+                holistic,
+                hands,
+                _output,
+                res,
+                drawlandmarks,
+            )
 
             output_text = str(output)
             output_size = cv2.getTextSize(output_text, FONT, 0.5, 2)[0]
-            cv2.rectangle(image, (5, 0), (10 + output_size[0], 10 + output_size[1]), YELLOW, -1)
+            cv2.rectangle(
+                image, (5, 0), (10 + output_size[0], 10 + output_size[1]), YELLOW, -1
+            )
             cv2.putText(image, output_text, (10, 15), FONT, 0.5, BLACK, 2)
 
             mode_text = f"Number: {numberMode}"
             mode_size = cv2.getTextSize(mode_text, FONT, 0.5, 2)[0]
-            cv2.rectangle(image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1)
+            cv2.rectangle(
+                image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1
+            )
             cv2.putText(image, mode_text, (10, 40), FONT, 0.5, BLACK, 2)
-
 
             frame_array.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-    edit_yaml_variable(file_path, 'output', output)
-    edit_yaml_variable(file_path, '_output', _output)
-    
-    return av.VideoFrame.from_ndarray(image,format="bgr24")
-    
+    edit_yaml_variable(file_path, "output", output)
+    edit_yaml_variable(file_path, "_output", _output)
+
+    return av.VideoFrame.from_ndarray(image, format="bgr24")
+
 
 def run_sign_detector():
     """
@@ -437,7 +488,7 @@ def run_sign_detector():
         # },
         # video_processor_factory=OpenCVVideoProcessor,
         async_processing=True,
-        video_frame_callback=video_frame_callback
+        video_frame_callback=video_frame_callback,
     )
 
 
@@ -446,7 +497,9 @@ def main():
     Main function.
     """
     st.title("Real Time Sign Language Recognition")
-    st.subheader('Tip: Press "k" to enable fingerspelling | "l" for number mode | "v" to clear output | "d" to draw landmarks')
+    st.subheader(
+        'Tip: Press "k" to enable fingerspelling | "l" for number mode | "v" to clear output | "d" to draw landmarks'
+    )
     run_sign_detector()
 
 

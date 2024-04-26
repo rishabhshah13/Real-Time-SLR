@@ -15,7 +15,7 @@ mp_holistic = mp.solutions.holistic
 mp_hands = mp.solutions.hands
 
 # Autocorrect Word
-spell = Speller(lang='en')
+spell = Speller(lang="en")
 
 # Load models
 letter_model = load_model(model_letter_path)
@@ -34,6 +34,7 @@ for model, path in zip(models, gloss_models_path):
 tflite_keras_model = TFLiteModel(islr_models=models)
 sequence_data = []
 
+
 def parse_opt():
     """
     Parse command line arguments.
@@ -42,15 +43,20 @@ def parse_opt():
     - opt (argparse.Namespace): Parsed arguments.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--source', type=str, default=None, help='Video Path/0 for Webcam')
-    parser.add_argument('-a', '--autocorrect', action='store_true', help='Autocorrect Misspelled Word')
-    parser.add_argument('-g', '--gif', action='store_true', help='Save GIF Result')
-    parser.add_argument('-t', '--timing', type=int, default=8, help='Timing Threshold')
-    parser.add_argument('-wi', '--width',  type=int, default=800, help='Webcam Width')
-    parser.add_argument('-he', '--height', type=int, default=600, help='Webcam Height')
-    parser.add_argument('-f', '--fps', type=int, default=30, help='Webcam FPS')
+    parser.add_argument(
+        "-s", "--source", type=str, default=None, help="Video Path/0 for Webcam"
+    )
+    parser.add_argument(
+        "-a", "--autocorrect", action="store_true", help="Autocorrect Misspelled Word"
+    )
+    parser.add_argument("-g", "--gif", action="store_true", help="Save GIF Result")
+    parser.add_argument("-t", "--timing", type=int, default=8, help="Timing Threshold")
+    parser.add_argument("-wi", "--width", type=int, default=800, help="Webcam Width")
+    parser.add_argument("-he", "--height", type=int, default=600, help="Webcam Height")
+    parser.add_argument("-f", "--fps", type=int, default=30, help="Webcam FPS")
     opt = parser.parse_args()
     return opt
+
 
 def handle_key_press(key):
     """
@@ -72,30 +78,42 @@ def handle_key_press(key):
     elif key == 8:
         output.pop()
 
-    elif key == ord('k'):
+    elif key == ord("k"):
         fingerspellingmode = not fingerspellingmode
 
-    elif key == ord('d'):
-        draw_landmarks_flag = not draw_landmarks_flag    
+    elif key == ord("d"):
+        draw_landmarks_flag = not draw_landmarks_flag
 
     # Press 's' to save result
-    elif key == ord('s'):
+    elif key == ord("s"):
         saveGIF = False
         return False
-        
 
     # Press 'm' to change mode between alphabet and number
-    elif key == ord('l'):
+    elif key == ord("l"):
         if fingerspellingmode:
             numberMode = not numberMode
 
     # Press 'c' to clear output
-    elif key == ord('v'):
+    elif key == ord("v"):
         output.clear()
 
     return True
 
-def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect, holistic, hands, _output, res):
+
+def process_frame(
+    image,
+    fingerspellingmode,
+    numberMode,
+    output,
+    current_hand,
+    TIMING,
+    autocorrect,
+    holistic,
+    hands,
+    _output,
+    res,
+):
     """
     Process each frame of the video or webcam feed.
 
@@ -121,22 +139,47 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
 
     if fingerspellingmode:
         try:
-            from scripts.inference.fingerspellinginference import recognize_fingerpellings
-            image, current_hand, output, _output = recognize_fingerpellings(image, numberMode, letter_model,
-                                                                            number_model, hands, current_hand, output, _output,TIMING, autocorrect,draw_landmarks_flag)
+            from scripts.inference.fingerspellinginference import (
+                recognize_fingerpellings,
+            )
+
+            image, current_hand, output, _output = recognize_fingerpellings(
+                image,
+                numberMode,
+                letter_model,
+                number_model,
+                hands,
+                current_hand,
+                output,
+                _output,
+                TIMING,
+                autocorrect,
+                draw_landmarks_flag,
+            )
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
     else:
         try:
             from scripts.inference.glossinference import getglosses
-            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image, res, draw_landmarks_flag)
+
+            image, sequence_data = getglosses(
+                output,
+                decoder,
+                tflite_keras_model,
+                sequence_data,
+                holistic,
+                image,
+                res,
+                draw_landmarks_flag,
+            )
 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"{error}, line {exc_tb.tb_lineno}")
 
     return image, output, current_hand
+
 
 def process_input(opt):
     """
@@ -162,7 +205,7 @@ def process_input(opt):
     draw_landmarks_flag = False
     _output = [[], []]
     output = []
-    
+
     print(f"Timing Threshold is {TIMING} frames.")
     print(f"Using Autocorrect: {autocorrect}")
 
@@ -177,6 +220,7 @@ def process_input(opt):
 
     return video_path, fps, webcam_width, webcam_height
 
+
 def main():
     """
     Main function to run the ASL recognition system.
@@ -185,7 +229,7 @@ def main():
     video_path, fps, webcam_width, webcam_height = process_input(opt)
 
     global output, _output
-    
+
     _output = [[], []]
     output = []
 
@@ -202,9 +246,14 @@ def main():
     # Get the current frame rate
     current_fps = capture.get(cv2.CAP_PROP_FPS)
 
-    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        with mp_hands.Hands(min_detection_confidence=min_detection_confidence,
-                            min_tracking_confidence=min_tracking_confidence, max_num_hands=MAX_HANDS) as hands:
+    with mp_holistic.Holistic(
+        min_detection_confidence=0.5, min_tracking_confidence=0.5
+    ) as holistic:
+        with mp_hands.Hands(
+            min_detection_confidence=min_detection_confidence,
+            min_tracking_confidence=min_tracking_confidence,
+            max_num_hands=MAX_HANDS,
+        ) as hands:
             while capture.isOpened():
                 success, image = capture.read()
 
@@ -223,22 +272,41 @@ def main():
                     frame_width = int(capture.get(3))
                     frame_height = int(capture.get(4))
 
-                image, output, current_hand = process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING,
-                                                             autocorrect, holistic, hands, _output, res)
+                image, output, current_hand = process_frame(
+                    image,
+                    fingerspellingmode,
+                    numberMode,
+                    output,
+                    current_hand,
+                    TIMING,
+                    autocorrect,
+                    holistic,
+                    hands,
+                    _output,
+                    res,
+                )
 
                 output_text = str(output)
                 output_size = cv2.getTextSize(output_text, FONT, 0.5, 2)[0]
-                cv2.rectangle(image, (5, 0), (10 + output_size[0], 10 + output_size[1]), YELLOW, -1)
+                cv2.rectangle(
+                    image,
+                    (5, 0),
+                    (10 + output_size[0], 10 + output_size[1]),
+                    YELLOW,
+                    -1,
+                )
                 cv2.putText(image, output_text, (10, 15), FONT, 0.5, BLACK, 2)
 
                 mode_text = f"Number: {numberMode}"
                 mode_size = cv2.getTextSize(mode_text, FONT, 0.5, 2)[0]
-                cv2.rectangle(image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1)
+                cv2.rectangle(
+                    image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1
+                )
                 cv2.putText(image, mode_text, (10, 40), FONT, 0.5, BLACK, 2)
 
                 cv2.putText(image, help_text, (10, 70), FONT, 0.5, BLACK, 2)
 
-                cv2.imshow('American Sign Language', image)
+                cv2.imshow("American Sign Language", image)
 
                 frame_array.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
@@ -246,7 +314,7 @@ def main():
 
                 if not handle_key_press(key):
                     break
-                
+
                 # Get the current frame rate
                 current_fps = capture.get(cv2.CAP_PROP_FPS)
 
@@ -254,7 +322,7 @@ def main():
                 ratio = current_fps / desired_fps
 
                 # Delay to match the desired frame rate
-                if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord('q'):
+                if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord("q"):
                     break
 
     cv2.destroyAllWindows()
@@ -264,10 +332,8 @@ def main():
 
     if saveGIF == True:
         print(f"Saving GIF Result..")
-        save_gif(
-            frame_array, fps=fps,
-            output_dir="./assets/result_ASL.gif"
-        )
+        save_gif(frame_array, fps=fps, output_dir="./assets/result_ASL.gif")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
