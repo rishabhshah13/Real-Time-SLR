@@ -4,14 +4,23 @@ from utils import calc_landmark_list, draw_landmarks as draw_landmarks_hands, dr
 from autocorrect import Speller
 from config import *
 
-
 # Autocorrect Word
 spell = Speller(lang='en')
 
-def get_output(idx,_output,output,TIMING, autocorrect):
-
-    # global _output, output, autocorrect, TIMING
-
+def get_output(idx, _output, output, TIMING, autocorrect):
+    """
+    Get output from predicted characters.
+    
+    Args:
+    - idx (int): Index of the output list.
+    - _output (list): List of character sequences predicted from hand gestures.
+    - output (list): List of recognized words.
+    - TIMING (int): Threshold for timing to consider a character.
+    - autocorrect (bool): Whether to autocorrect misspelled words.
+    
+    Returns:
+    - None
+    """
     key = []
     for i in range(len(_output[idx])):
         character = _output[idx][i]
@@ -38,27 +47,37 @@ def get_output(idx,_output,output,TIMING, autocorrect):
         output.append(text.title())
     return None
 
+def recognize_fingerpellings(image, numberMode, letter_model, number_model, hands, current_hand, output, _output, TIMING, autocorrect, draw_landmarks_flag):
+    """
+    Recognize finger spellings from the given image.
 
-def recognize_fingerpellings(image, numberMode, letter_model, number_model, hands, current_hand, output, _output,TIMING, autocorrect,draw_landmarks_flag):
+    Args:
+    - image (numpy array): Input image.
+    - numberMode (bool): Whether to recognize numbers.
+    - letter_model: Model for recognizing letters.
+    - number_model: Model for recognizing numbers.
+    - hands: MediaPipe Hands model.
+    - current_hand (int): Number of hands in the previous frame.
+    - output (list): List of recognized words.
+    - _output (list): List of character sequences predicted from hand gestures.
+    - TIMING (int): Threshold for timing to consider a character.
+    - autocorrect (bool): Whether to autocorrect misspelled words.
+    - draw_landmarks_flag (bool): Whether to draw landmarks on the image.
 
-    
-    # global mp_drawing 
-    # global output, _output
-
-    image.flags.writeable = False
+    Returns:
+    - image (numpy array): Image with recognized gestures and landmarks.
+    - current_hand (int): Number of hands in the current frame.
+    - output (list): Updated list of recognized words.
+    - _output (list): Updated list of character sequences predicted from hand gestures.
+    """
     results = hands.process(image)
 
     # Draw the hand annotations on the image
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-
     multi_hand_landmarks = results.multi_hand_landmarks
     multi_handedness = results.multi_handedness
-
-    # Load Classification Model
-    # letter_model = load_model(model_letter_path)
-    # number_model = load_model(model_number_path)
 
     _gesture = []
     data_aux = []
@@ -82,10 +101,6 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
             current_select_hand = multi_hand_landmarks[idx]
             handness = multi_handedness[idx].classification[0].label
 
-            # mp_drawing.draw_landmarks(image, current_select_hand, mp_hands.HAND_CONNECTIONS)
-            landmark_list = calc_landmark_list(image, current_select_hand)
-            # image = draw_landmarks_hands(image, landmark_list)
-
             # Get (x, y) coordinates of hand landmarks
             x_values = [lm.x for lm in current_select_hand.landmark]
             y_values = [lm.y for lm in current_select_hand.landmark]
@@ -95,10 +110,6 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
             max_x = int(max(x_values) * w)
             min_y = int(min(y_values) * h)
             max_y = int(max(y_values) * h)
-
-            # Draw Text Information
-            # cv2.putText(image, f"Hand No. #{idx}", (min_x - 10, max_y + 30), FONT, 0.5, GREEN, 2)
-            # cv2.putText(image, f"{handness} Hand", (min_x - 10, max_y + 60), FONT, 0.5, GREEN, 2)
 
             # Flip Left Hand to Right Hand
             if handness == 'Left':
@@ -131,7 +142,7 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
     # Number of hands is decreasing, create "SPACE"
     if isDecreased == True:
         if current_hand == 1:
-            get_output(0,_output,output,TIMING, autocorrect)
+            get_output(0, _output, output, TIMING, autocorrect)
 
     # Number of hands is the same, append gesture
     else:
@@ -144,4 +155,4 @@ def recognize_fingerpellings(image, numberMode, letter_model, number_model, hand
     else:
         current_hand = 0
 
-    return image, current_hand,output, _output
+    return image, current_hand, output, _output

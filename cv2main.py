@@ -34,8 +34,13 @@ for model, path in zip(models, gloss_models_path):
 tflite_keras_model = TFLiteModel(islr_models=models)
 sequence_data = []
 
-
 def parse_opt():
+    """
+    Parse command line arguments.
+
+    Returns:
+    - opt (argparse.Namespace): Parsed arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--source', type=str, default=None, help='Video Path/0 for Webcam')
     parser.add_argument('-a', '--autocorrect', action='store_true', help='Autocorrect Misspelled Word')
@@ -48,8 +53,16 @@ def parse_opt():
     opt = parser.parse_args()
     return opt
 
-
 def handle_key_press(key):
+    """
+    Handle key presses.
+
+    Args:
+    - key (int): Key code of the pressed key.
+
+    Returns:
+    - bool: True if program should continue, False if program should stop.
+    """
     global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
 
     # Press 'Esc' to quit
@@ -68,8 +81,8 @@ def handle_key_press(key):
 
     # Press 's' to save result
     elif key == ord('s'):
-        # saveGIF = True
-        # saveVDO = True
+        saveGIF = True
+        saveVDO = True
         return False
         
 
@@ -84,8 +97,28 @@ def handle_key_press(key):
 
     return True
 
+def process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING, autocorrect, holistic, hands, _output, res):
+    """
+    Process each frame of the video or webcam feed.
 
-def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING, autocorrect,holistic,hands,_output,res):
+    Args:
+    - image (numpy array): Input image.
+    - fingerspellingmode (bool): Whether the fingerspelling mode is active.
+    - numberMode (bool): Whether the number recognition mode is active.
+    - output (list): List of recognized words or gestures.
+    - current_hand (int): Number of hands detected in the previous frame.
+    - TIMING (int): Timing threshold for recognizing gestures.
+    - autocorrect (bool): Whether to autocorrect misspelled words.
+    - holistic: MediaPipe Holistic model.
+    - hands: MediaPipe Hands model.
+    - _output (list): List of character sequences predicted from hand gestures.
+    - res (list): List of recognized glosses.
+
+    Returns:
+    - image (numpy array): Processed image.
+    - output (list): Updated list of recognized words or gestures.
+    - current_hand (int): Updated number of hands detected in the current frame.
+    """
     global letter_model, number_model, tflite_keras_model, sequence_data, draw_landmarks_flag
 
     if fingerspellingmode:
@@ -99,7 +132,7 @@ def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TI
     else:
         try:
             from scripts.inference.glossinference import getglosses
-            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image,res,draw_landmarks_flag)
+            image, sequence_data = getglosses(output, decoder, tflite_keras_model, sequence_data, holistic, image, res, draw_landmarks_flag)
 
         except Exception as error:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -107,8 +140,19 @@ def process_frame(image, fingerspellingmode,numberMode, output, current_hand, TI
 
     return image, output, current_hand
 
-
 def process_input(opt):
+    """
+    Process input arguments.
+
+    Args:
+    - opt (argparse.Namespace): Parsed arguments.
+
+    Returns:
+    - video_path: Video path or webcam index.
+    - fps (int): Frame rate.
+    - webcam_width (int): Webcam width.
+    - webcam_height (int): Webcam height.
+    """
     global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
@@ -136,8 +180,10 @@ def process_input(opt):
 
     return video_path, fps, webcam_width, webcam_height
 
-
 def main():
+    """
+    Main function to run the ASL recognition system.
+    """
     opt = parse_opt()
     video_path, fps, webcam_width, webcam_height = process_input(opt)
 
@@ -149,7 +195,6 @@ def main():
     frame_array = []
     current_hand = 0
     res = []
-
 
     capture = cv2.VideoCapture(video_path, cv2.CAP_DSHOW)
     if capture.read()[0] is False:
@@ -166,7 +211,6 @@ def main():
             while capture.isOpened():
                 success, image = capture.read()
 
-
                 if not success:
                     if video_path == 0:
                         print("Ignoring empty camera frame.")
@@ -182,8 +226,8 @@ def main():
                     frame_width = int(capture.get(3))
                     frame_height = int(capture.get(4))
 
-                image, output, current_hand = process_frame(image, fingerspellingmode,numberMode, output, current_hand, TIMING,
-                                                             autocorrect,holistic,hands,_output,res)
+                image, output, current_hand = process_frame(image, fingerspellingmode, numberMode, output, current_hand, TIMING,
+                                                             autocorrect, holistic, hands, _output, res)
 
                 output_text = str(output)
                 output_size = cv2.getTextSize(output_text, FONT, 0.5, 2)[0]
@@ -212,11 +256,9 @@ def main():
                 # Calculate the ratio to adjust frame rate
                 ratio = current_fps / desired_fps
 
-
                 # Delay to match the desired frame rate
                 if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord('q'):
                     break
-
 
     cv2.destroyAllWindows()
     capture.release()
@@ -243,7 +285,6 @@ def main():
             width=width, height=height,
             output_dir="./assets/result_ASL.mp4"
         )
-
 
 if __name__ == '__main__':
     main()

@@ -2,19 +2,6 @@ import mediapipe as mp
 import cv2
 import numpy as np
 
-
-# class CFG:
-#     """
-#     Configuration class for ASL recognition.
-
-#     Attributes:
-#         sequence_length (int): Length of the sequence used for recognition.
-#         rows_per_frame (int): Number of rows per frame in the image.
-#     """
-#     sequence_length = SEQ_LEN
-#     rows_per_frame = ROWS_PER_FRAME
-
-
 mp_holistic = mp.solutions.holistic # holistic model
 mp_drawing = mp.solutions.drawing_utils # drawing utilities
 
@@ -34,9 +21,6 @@ def draw_landmarks(image, results):
     mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_TESSELATION,
                             mp_drawing.DrawingSpec(color=(0,0,0), thickness=1, circle_radius=0),
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=1, circle_radius=0))
-    # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-    #                           mp_drawing.DrawingSpec(color=(0,150,0), thickness=3, circle_radius=3),
-    #                           mp_drawing.DrawingSpec(color=(0,0,0), thickness=2, circle_radius=2))
     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=3, circle_radius=3),
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=2, circle_radius=2))

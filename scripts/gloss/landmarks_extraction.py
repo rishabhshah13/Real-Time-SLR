@@ -54,9 +54,6 @@ def draw(image, results):
     mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_TESSELATION,
                             mp_drawing.DrawingSpec(color=(0,0,0), thickness=1, circle_radius=0),
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=1, circle_radius=0))
-    # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-    #                           mp_drawing.DrawingSpec(color=(0,150,0), thickness=3, circle_radius=3),
-    #                           mp_drawing.DrawingSpec(color=(0,0,0), thickness=2, circle_radius=2))
     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=3, circle_radius=3),
                             mp_drawing.DrawingSpec(color=(227, 224, 113), thickness=2, circle_radius=2))

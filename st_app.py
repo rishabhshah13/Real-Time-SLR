@@ -33,6 +33,7 @@ from config import *
 
 from scripts.inference.fingerspellinginference import recognize_fingerpellings
 from scripts.inference.glossinference import getglosses
+from scripts.turn import get_ice_servers
 
 from streamlit_shortcuts import add_keyboard_shortcuts
 
@@ -51,38 +52,6 @@ def load_modela(model_path):
         model_dict = pickle.load(model_file)
         model = model_dict['model']
     return model
-
-#####################
-# letter_model = load_modela(model_letter_path)
-# number_model = load_modela(model_number_path)
-
-# # letter_model = load_model(model_letter_path)
-# # number_model = load_model(model_number_path)
-
-# # Load maps
-# s2p_map = {k.lower(): v for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-# p2s_map = {v: k for k, v in load_json_file("sign_language/src/sign_to_prediction_index_map.json").items()}
-# encoder = lambda x: s2p_map.get(x.lower())
-# decoder = lambda x: p2s_map.get(x)
-
-# # Load TFLite model
-# models_path = ['sign_language/models/islr-fp16-192-8-seed_all42-foldall-last.h5']
-# models = [get_model() for _ in models_path]
-# for model, path in zip(models, models_path):
-#     model.load_weights(path)
-
-
-# @st.cache_resource()
-# def kmodel():
-#     return TFLiteModel(islr_models=models)
-# tflite_keras_model = kmodel()
-
-
-# tflite_keras_model = TFLiteModel(islr_models=models)
-# sequence_data = []
-#####################
-
-
 
 
 # Load maps
@@ -199,14 +168,12 @@ def handle_key_press(key):
     elif key == 8:
         output.pop()
 
-    # elif key == ord(' '):
-    #     fingerspellingmode = not fingerspellingmode
 
-    # # Press 's' to save result
-    # elif key == ord('s'):
-    #     saveGIF = True
-    #     saveVDO = True
-    #     return False
+    # Press 's' to save result
+    elif key == ord('s'):
+        saveGIF = True
+        saveVDO = True
+        return False
 
     # Press 'm' to change mode between alphabet and number
     elif key == ord('m'):
@@ -241,8 +208,7 @@ def edit_yaml_variable(file_path, variable_name, new_value):
 
     # Write the changes back to the YAML file
     with open(file_path, "w") as f:
-        yaml.dump(config, f, default_flow_style=False)
-    
+        yaml.dump(config, f, default_flow_style=False)    
     print("Final Edit Config" ,config)
 
 
@@ -309,13 +275,6 @@ st.button("clearoutput", on_click=clearoutput)
 st.button("drawlandmarks", on_click=change_drawlandmarks)
 
 
-
-# add_keyboard_shortcuts({
-#     'Ctrl+Alt+k': 'fingerspelling',
-#     'Ctrl+Alt+l': 'numbermode',
-
-# })
-
 add_keyboard_shortcuts({
     'k': 'fingerspelling',
     'l': 'numbermode',
@@ -351,19 +310,6 @@ def process_frame(image, fingerspellingmode, numberMode, output, current_hand, T
 RTC_CONFIGURATION = RTCConfiguration(
     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
 )
-
-
-# from twilio.rest import Client
-# import os
-# # Find your Account SID and Auth Token at twilio.com/console
-# # and set the environment variables. See http://twil.io/secure
-# account_sid = os.environ['TWILIO_ACCOUNT_SID']
-# auth_token = os.environ['TWILIO_AUTH_TOKEN']
-# client = Client(account_sid, auth_token)
-
-# token = client.tokens.create()
-from scripts.turn import get_ice_servers
-
 
 
 def video_frame_callback(frame):
@@ -424,13 +370,6 @@ def video_frame_callback(frame):
     
 
 def run_sign_detector():
-
-    # global numba
-
-    # print(numba)
-    # if "numbb" in st.session_state:
-    #     print("Sesstopm stete", st.session_state.numbb)
-    # print(numbb)
 
     cam = webrtc_streamer(
         key="Sign-Language-Detector",
