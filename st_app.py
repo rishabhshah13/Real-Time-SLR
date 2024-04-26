@@ -1,41 +1,65 @@
-# # %%
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import cv2
-import numpy as np
-import time
 import mediapipe as mp
 from scripts.gloss.backbone import TFLiteModel, get_model
-from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
+from scripts.gloss.landmarks_extraction import load_json_file 
 from config.config import SEQ_LEN, THRESH_HOLD
 import streamlit as st
 import threading
 import numpy as np
-import mediapipe as mp
 import cv2
 from scripts.gloss.my_functions import *
 from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 import av
 
 import sys
-import cv2
 import argparse
-import numpy as np
-import mediapipe as mp
-from autocorrect import Speller
-from scripts.utils import load_model, save_gif, save_video
-from scripts.gloss.my_functions import *
-from scripts.gloss.landmarks_extraction import load_json_file
-from scripts.gloss.backbone import TFLiteModel, get_model
-from config.config import SEQ_LEN, THRESH_HOLD
-from config.config import *
 
+from autocorrect import Speller
+from scripts.utils import load_model
 from scripts.inference.fingerspellinginference import recognize_fingerpellings
 from scripts.inference.glossinference import getglosses
 from scripts.turn import get_ice_servers
+from config.config import *
 
 from streamlit_shortcuts import add_keyboard_shortcuts
+
+
+# from flask import Flask, request, jsonify
+# from flask_cors import CORS
+# import cv2
+# import numpy as np
+# import time
+# import mediapipe as mp
+# from scripts.gloss.backbone import TFLiteModel, get_model
+# from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
+# from config.config import SEQ_LEN, THRESH_HOLD
+# import streamlit as st
+# import threading
+# import numpy as np
+# import mediapipe as mp
+# import cv2
+# from scripts.gloss.my_functions import *
+# from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
+# import av
+
+# import sys
+# import cv2
+# import argparse
+# import numpy as np
+# import mediapipe as mp
+# from autocorrect import Speller
+# from scripts.utils import load_model, save_gif, save_video
+# from scripts.gloss.my_functions import *
+# from scripts.gloss.landmarks_extraction import load_json_file
+# from scripts.gloss.backbone import TFLiteModel, get_model
+# from config.config import *
+
+# from scripts.inference.fingerspellinginference import recognize_fingerpellings
+# from scripts.inference.glossinference import getglosses
+# from scripts.turn import get_ice_servers
+
+# from streamlit_shortcuts import add_keyboard_shortcuts
+
 
 
 # Initialize MediaPipe solutions
@@ -193,7 +217,6 @@ def edit_yaml_variable(file_path, variable_name, new_value):
         while config == None:
             with open(file_path, "r") as f:
                 config = yaml.safe_load(f)
-            print("Edit Config" ,config)
     except FileNotFoundError as e:
         print("Error:", e)
         # If file not found, create an empty config
@@ -205,7 +228,6 @@ def edit_yaml_variable(file_path, variable_name, new_value):
     # Write the changes back to the YAML file
     with open(file_path, "w") as f:
         yaml.dump(config, f, default_flow_style=False)    
-    print("Final Edit Config" ,config)
 
 
 def read_yaml_variable(file_path, variable_name):
@@ -232,7 +254,6 @@ def read_yaml_variable(file_path, variable_name):
     except FileNotFoundError:
         # If file not found, return None
         return None
-
 
 
 
@@ -285,8 +306,6 @@ def change_drawlandmarks():
     edit_yaml_variable(file_path, 'draw_landmarks_flag', draw_landmarks_flag)  
     
 
-
-# st.button("delete", on_click=delete_callback)
 st.button("fingerspelling", on_click=change_fingerspellingmode)
 st.button("numbermode", on_click=change_numbermodemode)
 st.button("clearoutput", on_click=clearoutput)

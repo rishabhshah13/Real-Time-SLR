@@ -1,15 +1,7 @@
 _output:
-- - '7'
-  - '2'
-  - '2'
-  - '2'
-  - '2'
-  - '2'
-  - '2'
-  - '2'
 - []
-draw_landmarks_flag: false
+- []
+draw_landmarks_flag: true
 fingerspellingmode: true
-numberMode: true
-output:
-- '1'
+numberMode: false
+output: []
