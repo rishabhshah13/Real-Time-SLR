@@ -4,7 +4,6 @@
 ![GitHub](https://img.shields.io/github/license/rishabhshah13/Real-Time-SLR?style=flat-square)
 ![GitHub top language](https://img.shields.io/github/languages/top/rishabhshah13/Real-Time-SLR?style=flat-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/rishabhshah13/Real-Time-SLR?color=yellow&style=flat-square)
-![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/rishabhshah13/Real-Time-SLR?color=orange&style=flat-square)
 
 # Real-time Sign Language Gesture Recognition Using 1DCNN + Transformers on MediaPipe landmarks
 
