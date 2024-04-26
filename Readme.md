@@ -1,4 +1,4 @@
-```markdown
+
 ![Logo](/assets/sign_logo_straight.png)
 
 ![GitHub](https://img.shields.io/github/license/209sontung/sign-language?style=flat-square)
