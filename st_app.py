@@ -8,7 +8,7 @@ import time
 import mediapipe as mp
 from scripts.gloss.backbone import TFLiteModel, get_model
 from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file 
-from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
+from config.config import SEQ_LEN, THRESH_HOLD
 import streamlit as st
 import threading
 import numpy as np
@@ -24,11 +24,11 @@ import argparse
 import numpy as np
 import mediapipe as mp
 from autocorrect import Speller
-from utils import load_model, save_gif, save_video
+from scripts.utils import load_model, save_gif, save_video
 from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
-from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
+from config.config import SEQ_LEN, THRESH_HOLD
 from config.config import *
 
 from scripts.inference.fingerspellinginference import recognize_fingerpellings
@@ -135,7 +135,7 @@ def process_input(opt):
     Returns:
         tuple: Tuple containing video_path, fps, webcam_width, webcam_height.
     """
-    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
 
     print(f"Timing Threshold is {TIMING} frames.")
     print(f"Using Autocorrect: {autocorrect}")
@@ -160,7 +160,6 @@ lock = threading.Lock()
 opt = parse_opt()
 
 saveGIF = opt.gif
-saveVDO = opt.video
 source = opt.source
 TIMING = opt.timing
 autocorrect = opt.autocorrect
@@ -175,48 +174,6 @@ output = []
 frame_array = []
 current_hand = 0
 res = []
-
-
-
-
-def handle_key_press(key):
-    """
-    Handle key press events.
-
-    Args:
-        key (int): Key code.
-
-    Returns:
-        bool: True if the app should continue, False if it should quit.
-    """
-    global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
-
-    # Press 'Esc' to quit
-    if key == 27:
-        return False
-
-    # Press 'Backspace' to delete last word
-    elif key == 8:
-        output.pop()
-
-
-    # Press 's' to save result
-    elif key == ord('s'):
-        saveGIF = True
-        saveVDO = True
-        return False
-
-    # Press 'm' to change mode between alphabet and number
-    elif key == ord('m'):
-        if fingerspellingmode:
-            numberMode = not numberMode
-
-    # Press 'c' to clear output
-    elif key == ord('c'):
-        output.clear()
-
-    return True
-
 
 
 ## CHECK THIS ONE PROPERLY!
@@ -441,19 +398,9 @@ def video_frame_callback(frame):
 
             frame_array.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-            key = cv2.waitKey(5) & 0xFF
-
-            # if not handle_key_press(key):
-            #     break
-
-    # print(f"Gesture Recognition:\n{' '.join(output)}")
-
     edit_yaml_variable(file_path, 'output', output)
     edit_yaml_variable(file_path, '_output', _output)
     
-    # print(output)
-
-    # image = frame
     return av.VideoFrame.from_ndarray(image,format="bgr24")
     
 

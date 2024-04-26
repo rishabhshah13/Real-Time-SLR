@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-from utils import calc_landmark_list, draw_landmarks as draw_landmarks_hands, draw_info_text
+from scripts.utils import calc_landmark_list, draw_landmarks as draw_landmarks_hands, draw_info_text
 from autocorrect import Speller
-from config import *
+from config.config import *
 
 # Autocorrect Word
 spell = Speller(lang='en')

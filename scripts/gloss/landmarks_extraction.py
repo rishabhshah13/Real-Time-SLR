@@ -4,7 +4,7 @@ ASL Recognition Utility Functions
 This module contains utility functions for ASL recognition using the Mediapipe library.
 """
 
-from .config import ROWS_PER_FRAME, SEQ_LEN
+from config.config import ROWS_PER_FRAME, SEQ_LEN
 import json
 import cv2
 import mediapipe as mp

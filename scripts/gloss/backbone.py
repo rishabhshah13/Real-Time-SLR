@@ -1,5 +1,5 @@
-from .utils import Preprocess
-from .config import MAX_LEN, CHANNELS, NUM_CLASSES
+from .gloss_utils import Preprocess
+from config.config import MAX_LEN, CHANNELS, NUM_CLASSES
 import tensorflow as tf
 
 

@@ -4,11 +4,10 @@ import argparse
 import numpy as np
 import mediapipe as mp
 from autocorrect import Speller
-from utils import load_model, save_gif, save_video
+from scripts.utils import load_model, save_gif, save_video
 from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
-from scripts.gloss.config import SEQ_LEN, THRESH_HOLD
 from config.config import *
 
 mp_holistic = mp.solutions.holistic
@@ -45,7 +44,6 @@ def parse_opt():
     parser.add_argument('-s', '--source', type=str, default=None, help='Video Path/0 for Webcam')
     parser.add_argument('-a', '--autocorrect', action='store_true', help='Autocorrect Misspelled Word')
     parser.add_argument('-g', '--gif', action='store_true', help='Save GIF Result')
-    parser.add_argument('-v', '--video', action='store_true', help='Save Video Result')
     parser.add_argument('-t', '--timing', type=int, default=8, help='Timing Threshold')
     parser.add_argument('-wi', '--width',  type=int, default=800, help='Webcam Width')
     parser.add_argument('-he', '--height', type=int, default=600, help='Webcam Height')
@@ -63,7 +61,7 @@ def handle_key_press(key):
     Returns:
     - bool: True if program should continue, False if program should stop.
     """
-    global output, saveGIF, saveVDO, numberMode, fingerspellingmode, draw_landmarks_flag
+    global output, saveGIF, numberMode, fingerspellingmode, draw_landmarks_flag
 
     # Press 'Esc' to quit
     if key == 27:
@@ -73,7 +71,7 @@ def handle_key_press(key):
     elif key == 8:
         output.pop()
 
-    elif key == ord(' '):
+    elif key == ord('k'):
         fingerspellingmode = not fingerspellingmode
 
     elif key == ord('d'):
@@ -81,18 +79,17 @@ def handle_key_press(key):
 
     # Press 's' to save result
     elif key == ord('s'):
-        saveGIF = True
-        saveVDO = True
+        saveGIF = False
         return False
         
 
     # Press 'm' to change mode between alphabet and number
-    elif key == ord('m'):
+    elif key == ord('l'):
         if fingerspellingmode:
             numberMode = not numberMode
 
     # Press 'c' to clear output
-    elif key == ord('c'):
+    elif key == ord('v'):
         output.clear()
 
     return True
@@ -153,10 +150,9 @@ def process_input(opt):
     - webcam_width (int): Webcam width.
     - webcam_height (int): Webcam height.
     """
-    global saveGIF, saveVDO, TIMING, autocorrect, numberMode, fingerspellingmode, output, _output, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, numberMode, fingerspellingmode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
-    saveVDO = opt.video
     source = opt.source
     TIMING = opt.timing
     autocorrect = opt.autocorrect
@@ -270,20 +266,6 @@ def main():
         save_gif(
             frame_array, fps=fps,
             output_dir="./assets/result_ASL.gif"
-        )
-
-    if saveVDO == True:
-        print(f"Saving Video Result..")
-        if video_path == 0:
-            width = webcam_width
-            height = webcam_height
-        else:
-            width = frame_width
-            height = frame_height
-        save_video(
-            frame_array, fps=fps,
-            width=width, height=height,
-            output_dir="./assets/result_ASL.mp4"
         )
 
 if __name__ == '__main__':
