@@ -17,7 +17,7 @@ from scripts.inference.fingerspellinginference import recognize_fingerpellings
 from scripts.inference.glossinference import getglosses
 from scripts.turn import get_ice_servers
 
-# from config.config import *
+
 from config.config import (
     model_letter_path,
     model_number_path,
@@ -32,43 +32,6 @@ from config.config import (
 )
 
 from streamlit_shortcuts import add_keyboard_shortcuts
-
-
-# from flask import Flask, request, jsonify
-# from flask_cors import CORS
-# import cv2
-# import numpy as np
-# import time
-# import mediapipe as mp
-# from scripts.gloss.backbone import TFLiteModel, get_model
-# from scripts.gloss.landmarks_extraction import mediapipe_detection, draw, extract_coordinates, load_json_file
-# from config.config import SEQ_LEN, THRESH_HOLD
-# import streamlit as st
-# import threading
-# import numpy as np
-# import mediapipe as mp
-# import cv2
-# from scripts.gloss.my_functions import *
-# from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
-# import av
-
-# import sys
-# import cv2
-# import argparse
-# import numpy as np
-# import mediapipe as mp
-# from autocorrect import Speller
-# from scripts.utils import load_model, save_gif, save_video
-# from scripts.gloss.my_functions import *
-# from scripts.gloss.landmarks_extraction import load_json_file
-# from scripts.gloss.backbone import TFLiteModel, get_model
-# from config.config import *
-
-# from scripts.inference.fingerspellinginference import recognize_fingerpellings
-# from scripts.inference.glossinference import getglosses
-# from scripts.turn import get_ice_servers
-
-# from streamlit_shortcuts import add_keyboard_shortcuts
 
 
 # Initialize MediaPipe solutions
