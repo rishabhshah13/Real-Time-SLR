@@ -1,5 +1,10 @@
 _output:
-- []
+- - J
+  - J
+  - J
+  - J
+  - J
+  - J
 - []
 draw_landmarks_flag: true
 fingerspelling_mode: true

@@ -262,7 +262,6 @@ def read_yaml_variable(file_path, variable_name):
         while config == None:
             with open(file_path, "r") as f:
                 config = yaml.safe_load(f)
-            print("Read Config ", config)
         # Return the value of the variable if exists, otherwise return None
         return config.get(variable_name)
 
@@ -328,7 +327,12 @@ st.button("drawlandmarks", on_click=change_drawlandmarks)
 
 
 add_keyboard_shortcuts(
-    {"k": "fingerspelling", "l": "number_mode", "v": "clearoutput", "d": "drawlandmarks"}
+    {
+        "k": "fingerspelling",
+        "l": "number_mode",
+        "v": "clearoutput",
+        "d": "drawlandmarks",
+    }
 )
 
 

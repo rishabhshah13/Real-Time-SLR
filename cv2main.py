@@ -205,8 +205,7 @@ def process_input(opt):
     - webcam_width (int): Webcam width.
     - webcam_height (int): Webcam height.
     """
-    global saveGIF, TIMING, autocorrect, number_mode, \
-       fingerspelling_mode, output, _output, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, number_mode, fingerspelling_mode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
     source = opt.source
@@ -238,7 +237,7 @@ def main():
     Main function to run the ASL recognition system.
     """
     opt = parse_opt()
-    video_path, fps, webcam_width, webcam_height = process_input(opt)
+    video_path, fps, _, _ = process_input(opt)
 
     global output, _output
 
@@ -327,14 +326,8 @@ def main():
                 if not handle_key_press(key):
                     break
 
-                # Get the current frame rate
-                current_fps = capture.get(cv2.CAP_PROP_FPS)
-
-                # Calculate the ratio to adjust frame rate
-                ratio = current_fps / desired_fps
-
                 # Delay to match the desired frame rate
-                if cv2.waitKey(int(1000 / ratio)) & 0xFF == ord("q"):
+                if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord("q"):
                     break
 
     cv2.destroyAllWindows()
@@ -342,7 +335,7 @@ def main():
 
     print(f"Gesture Recognition:\n{' '.join(output)}")
 
-    if saveGIF == True:
+    if saveGIF is True:
         print(f"Saving GIF Result..")
         save_gif(frame_array, fps=fps, output_dir="./assets/result_ASL.gif")
 
