@@ -94,32 +94,33 @@ The directory structure of this repository is as follows:
 ├── Readme.md
 ├── assets
 ├── config
-│   ├── config.py
-│   └── config.yaml
-├── cv2main.py
+│   ├── config.py         # Configuration file for the project
+│   └── config.yaml       # YAML configuration file for the project
+├── cv2main.py            # Main script for real-time gesture recognition using OpenCV module
 ├── data
-│   └── sign_to_prediction_index_map.json
-├── dockerfile
-├── mac_requirements.txt
+│   └── sign_to_prediction_index_map.json  # Mapping of sign to prediction index
+├── dockerfile            # Dockerfile for containerizing the application
+├── mac_requirements.txt  # Requirements file for macOS
 ├── models
 │   ├── fingerspelling
-│   │   ├── letter_model.p
-│   │   └── number_model.p
+│   │   ├── letter_model.p   # Pre-trained model for fingerspelling recognition (pickle format)
+│   │   └── number_model.p   # Pre-trained model for fingerspelling recognition (pickle format)
 │   └── gloss
-│       └── gloss_model.h5
-├── packages.txt
-├── requirements.txt
+│       └── gloss_model.h5   # Pre-trained model for gloss recognition (HDF5 format)
+├── packages.txt           # Text file containing list of required packages
+├── requirements.txt       # Requirements file for the project
 ├── scripts
 │   ├── gloss
-│   │   ├── backbone.py
-│   │   ├── gloss_utils.py
-│   │   ├── landmarks_extraction.py
-│   │   └── my_functions.py
+│   │   ├── backbone.py             # Backbone model for gloss recognition
+│   │   ├── gloss_utils.py          # Utility functions for gloss recognition
+│   │   ├── landmarks_extraction.py # Extracting landmarks for gloss recognition
+│   │   └── my_functions.py         # Custom functions for gloss recognition
 │   ├── inference
-│   │   ├── fingerspellinginference.py
-│   │   └── glossinference.py
-│   ├── train_classifier.py
-│   ├── turn.py
-│   └── utils.py
-└── st_app.py
+│   │   ├── fingerspellinginference.py  # Script for fingerspelling inference
+│   │   └── glossinference.py           # Script for gloss inference
+│   ├── train_classifier.py    # Script for training classifiers
+│   ├── turn.py                # Script for TURN server
+│   └── utils.py               # Utility functions used across scripts
+└── st_app.py                 # Streamlit web UI application for gesture recognition
+
 ```

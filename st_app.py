@@ -495,12 +495,10 @@ def run_sign_detector():
     cam = webrtc_streamer(
         key="Sign-Language-Detector",
         mode=WebRtcMode.SENDRECV,
-        # rtc_configuration=RTC_CONFIGURATION,
-        # rtc_configuration={
-        # "iceServers": get_ice_servers(),
-        # "iceTransportPolicy": "relay",
-        # },
-        # video_processor_factory=OpenCVVideoProcessor,
+        rtc_configuration={              ### Comment these if running on local
+        "iceServers": get_ice_servers(), ### Comment these if running on local  
+        "iceTransportPolicy": "relay",   ### Comment these if running on local
+        },                               ### Comment these if running on local
         async_processing=True,
         video_frame_callback=video_frame_callback,
     )
