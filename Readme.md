@@ -1,7 +1,8 @@
 
-![Logo](/assets/sign_logo_straight.png)
+![Logo](/assets/ASL-cover-image.webp)
+![Logo](/assets/numbers.png)
 
-![GitHub](https://img.shields.io/github/license/rishabhshah13/Real-Time-SLR?style=flat-square)
+
 ![GitHub top language](https://img.shields.io/github/languages/top/rishabhshah13/Real-Time-SLR?style=flat-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/rishabhshah13/Real-Time-SLR?color=yellow&style=flat-square)
 
