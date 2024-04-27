@@ -121,7 +121,5 @@ The directory structure of this repository is as follows:
 │   ├── train_classifier.py
 │   ├── turn.py
 │   └── utils.py
-├── setup.py
-├── someconfig
 └── st_app.py
 ```
