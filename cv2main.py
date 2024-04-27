@@ -1,14 +1,25 @@
 import sys
 import cv2
 import argparse
-import numpy as np
 import mediapipe as mp
 from autocorrect import Speller
 from scripts.utils import load_model, save_gif
 from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import load_json_file
 from scripts.gloss.backbone import TFLiteModel, get_model
-from config.config import *
+from config.config import (
+    model_letter_path,
+    model_number_path,
+    index_map,
+    gloss_models_path,
+    min_tracking_confidence,
+    min_detection_confidence,
+    MAX_HANDS,
+    YELLOW,
+    FONT,
+    BLACK,
+    help_text,
+)
 
 
 mp_holistic = mp.solutions.holistic
@@ -194,7 +205,8 @@ def process_input(opt):
     - webcam_width (int): Webcam width.
     - webcam_height (int): Webcam height.
     """
-    global saveGIF, TIMING, autocorrect, numberMode, fingerspellingmode, output, _output, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, numberMode, \
+       fingerspellingmode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
     source = opt.source
@@ -322,7 +334,7 @@ def main():
                 ratio = current_fps / desired_fps
 
                 # Delay to match the desired frame rate
-                if cv2.waitKey(int(1000 / desired_fps)) & 0xFF == ord("q"):
+                if cv2.waitKey(int(1000 / ratio)) & 0xFF == ord("q"):
                     break
 
     cv2.destroyAllWindows()

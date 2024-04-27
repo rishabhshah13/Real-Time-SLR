@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from scripts.gloss.my_functions import *
+
+# from scripts.gloss.my_functions import *
 from scripts.gloss.landmarks_extraction import (
     mediapipe_detection,
     draw,
