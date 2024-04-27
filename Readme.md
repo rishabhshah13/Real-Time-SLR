@@ -57,11 +57,23 @@ To use the sign language gesture recognition system, follow these steps:
 
 1. Ensure that you have installed all the required dependencies (see [Installation](#installation)).
 
-2. Run the main.py file, which contains the main script for real-time gesture recognition.
+2. Choose the method of running the application:
+   - **Local OpenCV Module**:
+     If you want to use the OpenCV module locally, run `cv2main.py`:
 
-```bash
-python main.py
-```
+     ```bash
+     python cv2main.py
+     ```
+
+   - **Streamlit Web UI**:
+     If you want to use the Streamlit web UI, run `st_app.py`:
+
+     ```bash
+     streamlit run st_app.py
+     ```
+
+3. The system will start capturing your hand gestures using the webcam (for `cv2main.py`) or through the Streamlit web interface, and display the recognized gestures in real-time.
+
 
 3. The system will start capturing your hand gestures using the webcam and display the recognized gestures in real-time.
 
