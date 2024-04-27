@@ -145,3 +145,4 @@ validators==0.28.1
 Werkzeug==3.0.2
 wrapt==1.14.1
 yarl==1.9.4
+tensorflow_macos==2.15.0

@@ -14,5 +14,4 @@ streamlit==1.28.2
 streamlit_shortcuts==0.1.1
 streamlit_webrtc==0.47.6
 tensorflow==2.15.0
-tensorflow_macos==2.15.0
 twilio==9.0.5
