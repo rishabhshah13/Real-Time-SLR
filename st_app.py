@@ -173,7 +173,7 @@ def process_input(opt):
     Returns:
         tuple: Tuple containing video_path, fps, webcam_width, webcam_height.
     """
-    global saveGIF, TIMING, autocorrect, numberMode, fingerspellingmode, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, number_mode, fingerspelling_mode, draw_landmarks_flag
 
     print(f"Timing Threshold is {TIMING} frames.")
     print(f"Using Autocorrect: {autocorrect}")
@@ -200,8 +200,8 @@ saveGIF = opt.gif
 source = opt.source
 TIMING = opt.timing
 autocorrect = opt.autocorrect
-numberMode = False
-fingerspellingmode = True
+number_mode = False
+fingerspelling_mode = True
 draw_landmarks_flag = False
 file_path = "config/config.yaml"
 
@@ -271,33 +271,33 @@ def read_yaml_variable(file_path, variable_name):
         return None
 
 
-def change_fingerspellingmode():
+def change_fingerspelling_mode():
     """
     Change the fingerspelling mode.
     """
-    global fingerspellingmode
-    print("Current fingerspellingmode: ", fingerspellingmode)
-    fingerspellingmode = read_yaml_variable(file_path, "fingerspellingmode")
-    fingerspellingmode = not fingerspellingmode
-    edit_yaml_variable(file_path, "fingerspellingmode", fingerspellingmode)
+    global fingerspelling_mode
+    print("Current fingerspelling_mode: ", fingerspelling_mode)
+    fingerspelling_mode = read_yaml_variable(file_path, "fingerspelling_mode")
+    fingerspelling_mode = not fingerspelling_mode
+    edit_yaml_variable(file_path, "fingerspelling_mode", fingerspelling_mode)
 
-    if fingerspellingmode:
+    if fingerspelling_mode:
         st.write("Fingerspelling mode!")
     else:
         st.write("Gloss mode!")
 
 
-def change_numbermodemode():
+def change_number_modemode():
     """
     Change the number mode.
     """
-    global numberMode
+    global number_mode
 
-    global numberMode
-    print("Current numberMode: ", numberMode)
-    numberMode = read_yaml_variable(file_path, "numberMode")
-    numberMode = not numberMode
-    edit_yaml_variable(file_path, "numberMode", numberMode)
+    global number_mode
+    print("Current number_mode: ", number_mode)
+    number_mode = read_yaml_variable(file_path, "number_mode")
+    number_mode = not number_mode
+    edit_yaml_variable(file_path, "number_mode", number_mode)
 
 
 def clearoutput():
@@ -321,21 +321,21 @@ def change_drawlandmarks():
     edit_yaml_variable(file_path, "draw_landmarks_flag", draw_landmarks_flag)
 
 
-st.button("fingerspelling", on_click=change_fingerspellingmode)
-st.button("numbermode", on_click=change_numbermodemode)
+st.button("fingerspelling", on_click=change_fingerspelling_mode)
+st.button("number_mode", on_click=change_number_modemode)
 st.button("clearoutput", on_click=clearoutput)
 st.button("drawlandmarks", on_click=change_drawlandmarks)
 
 
 add_keyboard_shortcuts(
-    {"k": "fingerspelling", "l": "numbermode", "v": "clearoutput", "d": "drawlandmarks"}
+    {"k": "fingerspelling", "l": "number_mode", "v": "clearoutput", "d": "drawlandmarks"}
 )
 
 
 def process_frame(
     image,
-    fingerspellingmode,
-    numberMode,
+    fingerspelling_mode,
+    number_mode,
     output,
     current_hand,
     TIMING,
@@ -351,8 +351,8 @@ def process_frame(
 
     Args:
         image (ndarray): Input image.
-        fingerspellingmode (bool): Fingerspelling mode flag.
-        numberMode (bool): Number mode flag.
+        fingerspelling_mode (bool): Fingerspelling mode flag.
+        number_mode (bool): Number mode flag.
         output (list): List containing detected gestures/characters.
         current_hand (int): Current hand index.
         TIMING (int): Timing threshold.
@@ -368,11 +368,11 @@ def process_frame(
     """
     global letter_model, number_model, tflite_keras_model, sequence_data
 
-    if fingerspellingmode:
+    if fingerspelling_mode:
         try:
             image, current_hand, output, _output = recognize_fingerpellings(
                 image,
-                numberMode,
+                number_mode,
                 letter_model,
                 number_model,
                 hands,
@@ -424,8 +424,8 @@ def video_frame_callback(frame):
     """
     global opt, video_path, fps, webcam_width, webcam_height, frame_array, current_hand, res  # ,  _output, output
 
-    fingerspellingmode = read_yaml_variable(file_path, "fingerspellingmode")
-    numberMode = read_yaml_variable(file_path, "numberMode")
+    fingerspelling_mode = read_yaml_variable(file_path, "fingerspelling_mode")
+    number_mode = read_yaml_variable(file_path, "number_mode")
     drawlandmarks = read_yaml_variable(file_path, "draw_landmarks_flag")
 
     output = read_yaml_variable(file_path, "output")
@@ -449,8 +449,8 @@ def video_frame_callback(frame):
 
             image, output, current_hand, _output = process_frame(
                 image,
-                fingerspellingmode,
-                numberMode,
+                fingerspelling_mode,
+                number_mode,
                 output,
                 current_hand,
                 TIMING,
@@ -469,7 +469,7 @@ def video_frame_callback(frame):
             )
             cv2.putText(image, output_text, (10, 15), FONT, 0.5, BLACK, 2)
 
-            mode_text = f"Number: {numberMode}"
+            mode_text = f"Number: {number_mode}"
             mode_size = cv2.getTextSize(mode_text, FONT, 0.5, 2)[0]
             cv2.rectangle(
                 image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1

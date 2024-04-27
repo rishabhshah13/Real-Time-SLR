@@ -79,7 +79,7 @@ def handle_key_press(key):
     Returns:
     - bool: True if program should continue, False if program should stop.
     """
-    global output, saveGIF, numberMode, fingerspellingmode, draw_landmarks_flag
+    global output, saveGIF, number_mode, fingerspelling_mode, draw_landmarks_flag
 
     # Press 'Esc' to quit
     if key == 27:
@@ -90,7 +90,7 @@ def handle_key_press(key):
         output.pop()
 
     elif key == ord("k"):
-        fingerspellingmode = not fingerspellingmode
+        fingerspelling_mode = not fingerspelling_mode
 
     elif key == ord("d"):
         draw_landmarks_flag = not draw_landmarks_flag
@@ -102,8 +102,8 @@ def handle_key_press(key):
 
     # Press 'm' to change mode between alphabet and number
     elif key == ord("l"):
-        if fingerspellingmode:
-            numberMode = not numberMode
+        if fingerspelling_mode:
+            number_mode = not number_mode
 
     # Press 'c' to clear output
     elif key == ord("v"):
@@ -114,8 +114,8 @@ def handle_key_press(key):
 
 def process_frame(
     image,
-    fingerspellingmode,
-    numberMode,
+    fingerspelling_mode,
+    number_mode,
     output,
     current_hand,
     TIMING,
@@ -130,8 +130,8 @@ def process_frame(
 
     Args:
     - image (numpy array): Input image.
-    - fingerspellingmode (bool): Whether the fingerspelling mode is active.
-    - numberMode (bool): Whether the number recognition mode is active.
+    - fingerspelling_mode (bool): Whether the fingerspelling mode is active.
+    - number_mode (bool): Whether the number recognition mode is active.
     - output (list): List of recognized words or gestures.
     - current_hand (int): Number of hands detected in the previous frame.
     - TIMING (int): Timing threshold for recognizing gestures.
@@ -148,7 +148,7 @@ def process_frame(
     """
     global letter_model, number_model, tflite_keras_model, sequence_data, draw_landmarks_flag
 
-    if fingerspellingmode:
+    if fingerspelling_mode:
         try:
             from scripts.inference.fingerspellinginference import (
                 recognize_fingerpellings,
@@ -156,7 +156,7 @@ def process_frame(
 
             image, current_hand, output, _output = recognize_fingerpellings(
                 image,
-                numberMode,
+                number_mode,
                 letter_model,
                 number_model,
                 hands,
@@ -205,15 +205,15 @@ def process_input(opt):
     - webcam_width (int): Webcam width.
     - webcam_height (int): Webcam height.
     """
-    global saveGIF, TIMING, autocorrect, numberMode, \
-       fingerspellingmode, output, _output, draw_landmarks_flag
+    global saveGIF, TIMING, autocorrect, number_mode, \
+       fingerspelling_mode, output, _output, draw_landmarks_flag
 
     saveGIF = opt.gif
     source = opt.source
     TIMING = opt.timing
     autocorrect = opt.autocorrect
-    numberMode = False
-    fingerspellingmode = False
+    number_mode = False
+    fingerspelling_mode = False
     draw_landmarks_flag = False
     _output = [[], []]
     output = []
@@ -286,8 +286,8 @@ def main():
 
                 image, output, current_hand = process_frame(
                     image,
-                    fingerspellingmode,
-                    numberMode,
+                    fingerspelling_mode,
+                    number_mode,
                     output,
                     current_hand,
                     TIMING,
@@ -309,7 +309,7 @@ def main():
                 )
                 cv2.putText(image, output_text, (10, 15), FONT, 0.5, BLACK, 2)
 
-                mode_text = f"Number: {numberMode}"
+                mode_text = f"Number: {number_mode}"
                 mode_size = cv2.getTextSize(mode_text, FONT, 0.5, 2)[0]
                 cv2.rectangle(
                     image, (5, 45), (10 + mode_size[0], 10 + mode_size[1]), YELLOW, -1

@@ -53,7 +53,7 @@ def get_output(idx, _output, output, TIMING, autocorrect):
 
 def recognize_fingerpellings(
     image,
-    numberMode,
+    number_mode,
     letter_model,
     number_model,
     hands,
@@ -69,7 +69,7 @@ def recognize_fingerpellings(
 
     Args:
     - image (numpy array): Input image.
-    - numberMode (bool): Whether to recognize numbers.
+    - number_mode (bool): Whether to recognize numbers.
     - letter_model: Model for recognizing letters.
     - number_model: Model for recognizing numbers.
     - hands: MediaPipe Hands model.
@@ -137,7 +137,7 @@ def recognize_fingerpellings(
                 data_aux.append(x_values[i] - min(x_values))
                 data_aux.append(y_values[i] - min(y_values))
 
-            if not numberMode:
+            if not number_mode:
                 # Alphabets Prediction
                 prediction = letter_model.predict([np.asarray(data_aux)])
                 gesture = str(prediction[0]).title()

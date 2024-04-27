@@ -2,6 +2,6 @@ _output:
 - []
 - []
 draw_landmarks_flag: true
-fingerspellingmode: true
-numberMode: false
+fingerspelling_mode: true
+number_mode: false
 output: []
